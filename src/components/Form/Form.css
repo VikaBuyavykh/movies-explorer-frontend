@@ -1,0 +1,251 @@
+.form__header {
+    margin: 0 auto;
+    padding: 70px 0 40px;
+    max-width: 396px;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+.form__logoLink {
+    transition: opacity .2s ease;
+    outline: none;
+}
+
+.form__logoLink:hover {
+    cursor: pointer;
+    opacity: .8;
+    transition: opacity .2s ease;
+}
+
+.form__logoLink:focus img {
+    border-radius: 20%;
+    box-shadow: 0 0 10px 2px rgba(61, 220, 132, .5);
+}
+
+.form__logo {
+    margin: 0;
+    padding: 0;
+    width: 38px;
+    object-fit: contain;
+    object-position: center;
+}
+
+.form__title {
+    margin: 0;
+    padding: 0;
+    color: #FFF;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.form__form {
+    margin: 0 auto;
+    padding: 0 0 70px;
+    max-width: 396px;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 91px;
+}
+
+.form__inputs-container {
+    margin: 0;
+    padding: 0;
+    height: 244px;
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form__input-group {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.form__label {
+    margin: 0 0 10px;
+    padding: 0;
+    color: #8B8B8B;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.form__input {
+    margin: 0;
+    padding: 15px;
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    background-color: #2F2F2F;
+    color: #FFF;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.form__input:focus {
+    box-shadow: 0 0 10px 2px rgba(61, 220, 132, .5);
+}
+
+.input-invalid {
+    color: #EE3465;
+}
+
+.form__error {
+    margin: 0;
+    padding: 10px 0 0;
+    color: #EE3465;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: normal;
+    visibility: hidden;
+}
+  
+.error-visible {
+    visibility: visible;
+}
+
+.form__button-group {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.form__button {
+    margin: 0;
+    padding: 14px 0;
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 3px;
+    background-color: #4285F4;
+    color: #FFF;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    transition: opacity .2s ease;
+}
+
+.form__button:hover {
+    cursor: pointer;
+    opacity: .8;
+    transition: opacity .2s ease;
+}
+
+.form__button:focus {
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, .5);
+}
+
+.form__text {
+    margin: 0;
+    padding: 0;
+    color: #8B8B8B;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.form__link {
+    margin: 0 0 0 6px;
+    padding: 0;
+    text-decoration: none;
+    outline: none;
+    color: #4285F4;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;
+    transition: opacity .2s ease;
+}
+
+.form__link:hover {
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity .2s ease;
+}
+
+.form__link:focus {
+    border-bottom: 1px solid white;
+}
+
+@media screen and (max-width: 1000px) {
+    .form__header {
+        padding-top: 150px;
+    }
+
+    .form__form {
+        padding-bottom: 150px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .form__header {
+        padding-top: 232px;
+    }
+
+    .form__form {
+        padding-bottom: 232px;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .form__header {
+        padding: 150px 0 60px;
+    }
+
+    .form__form {
+        padding-bottom: 150px;
+        gap: 130px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .form__header {
+        padding: 58px 0 80px;
+        width: 81.25%;
+        align-items: center;
+        gap: 50px;
+    }
+
+    .form__title {
+        text-align: center;
+    }
+
+    .form__form {
+        padding-bottom: 30px;
+        width: 81.25%;
+        gap: 179px;
+    }
+
+    .form__button, .form__text, .form__link {
+        font-size: 12px;
+    }
+
+    .form__button {
+        padding: 15px 0;
+    }
+}

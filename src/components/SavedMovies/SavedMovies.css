@@ -1,0 +1,23 @@
+.saved-movies {
+    margin: 0 auto;
+    padding: 0 0 240px;
+    width: 89%;
+    max-width: 1140px;
+}
+
+@media screen and (max-width: 800px) {
+    .saved-movies {
+        width: 92.19%;
+        padding: 0 0 140px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .saved-movies {
+        width: 90.625%;
+        padding: 0;
+        margin-bottom: 153px;
+        max-height: 783px;
+        overflow: hidden;
+    }
+}
