@@ -1,4 +1,4 @@
-.navigation {
+.nav-block {
     margin: 0;
     width: 100%;
     padding: 18px 0;
@@ -8,7 +8,7 @@
     align-items: center;
 }
 
-.navigation_popup {
+.nav-block_vertical {
     display: flex;    
     flex-direction: column;
     height: 79.5%;
@@ -16,7 +16,7 @@
     gap: 28px;
 }
 
-.navigation__main {
+.nav-block__container {
     margin: 0;
     display: flex;
     box-sizing: border-box;
@@ -25,11 +25,11 @@
     gap: 45px;
 }
 
-.navigation__main_popup {
+.nav-block__container_vertical {
     flex-direction: column;
 }
 
-.navigation__menu {
+.nav-block__menu {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -40,12 +40,12 @@
     gap: 16px;
 }
 
-.navigation__menu_popup {
+.nav-block__menu_vertical {
     flex-direction: column;
     gap: 29px;
 }
 
-.navigation__menu-item {
+.nav-block__menu-item {
     margin: 0;
     text-decoration: none;
     color: #FFF;
@@ -55,33 +55,33 @@
     transition: opacity .2s ease;
 }
 
-.navigation__menu-item:hover {
+.nav-block__menu-item:hover {
     cursor: pointer;
     opacity: .7;
     transition: opacity .2s ease;
 }
 
-.navigation__menu-item_active {
+.nav-block__menu-item_active {
     font-weight: 500;
 }
 
-.navigation__menu-button {
+.nav-block__menu-button {
     display: none;
     cursor: pointer;
 }
 
-.navigation__profile-link {
+.nav-block__account-group {
     text-decoration: none;
     transition: opacity .2s ease;
 }
 
-.navigation__profile-link:hover {
+.nav-block__account-group:hover {
     cursor: pointer;
     opacity: .8;
     transition: opacity .2s ease;
 }
 
-.navigation__profile {
+.nav-block__account {
     margin: 0;
     display: flex;
     box-sizing: border-box;
@@ -92,7 +92,7 @@
     box-shadow: 0px 3px 14px 0px rgba(0, 0, 0, 0.08);
 }
 
-.navigation__profile-text {
+.nav-block__text {
     margin-left: 11px;
     color: #FFF;
     font-size: 13px;
@@ -100,7 +100,7 @@
     line-height: 12px;
 }
 
-.navigation__profile-icon {
+.nav-block__icon {
     padding: 7.8px;
     width: 14px;
     border-radius: 50px;
@@ -110,35 +110,35 @@
 }
 
 @media screen and (max-width: 800px) {
-    .navigation {
+    .nav-block {
         padding: 18px 0;
     }
 
-    .navigation__main {
+    .nav-block__container {
         justify-content: flex-end;
         width: 100%;
     }
 
-    .navigation__menu {
+    .nav-block__menu {
         display: none;
     }
 
-    .navigation__menu_popup {
+    .nav-block__menu_vertical {
         display: flex;
     }
 
-    .navigation__menu-item {
+    .nav-block__menu-item {
         font-size: 18px;
         font-weight: 500;
         line-height: normal;
     }
 
-    .navigation__menu-item_active {
+    .nav-block__menu-item_active {
         padding-bottom: 3px;
         border-bottom: 2px solid #FFFFFF;
     }
     
-    .navigation__menu-button {
+    .nav-block__menu-button {
         display: block;
         border: none;
         background-color: transparent;
@@ -147,43 +147,43 @@
         width: 40px;
     }
 
-    .navigation__menu-button_popup {
+    .nav-block__menu-button_vertical {
         display: none;
     }
 
-    .navigation__menu-button img {
+    .nav-block__menu-button img {
         object-fit: contain;
         object-position: center;
     }
 
-    .navigation__profile-link {
+    .nav-block__account-group {
         display: none;
     }
 
-    .navigation__profile-link_popup {
+    .nav-block__account-group_vertical {
         display: unset;
     }
 }
 
 @media screen and (max-width: 400px) {
-    .navigation {
+    .nav-block {
         padding: 19px 0;
     }
 
-    .navigation_popup {
+    .nav-block_vertical {
         height: 82%;
         margin-top: 39%;
     }
 
-    .navigation__menu_popup {
+    .nav-block__menu_vertical {
         gap: 24px;
     }
 
-    .navigation__menu-button {
+    .nav-block__menu-button {
         width: 40px;
     }
 
-    .navigation__menu-button img {
+    .nav-block__menu-button img {
         width: 35px;
     }
 }

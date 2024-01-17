@@ -16,8 +16,6 @@
     .saved-movies {
         width: 90.625%;
         padding: 0;
-        margin-bottom: 153px;
-        max-height: 783px;
-        overflow: hidden;
+        margin-bottom: 140px;
     }
 }

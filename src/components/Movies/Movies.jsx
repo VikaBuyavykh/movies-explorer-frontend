@@ -14,13 +14,13 @@ export default function Movies({ onOpenClick, onCloseClick, isPopupVisible, isLo
             <main className="movies">
                 <SearchForm />
                 <MoviesCardList cards={cards} />
-                <section className="movies__more-section">
+                <div className="movies__more-section">
                         <button type="button" className="movies__more-button">Ещё</button>
-                </section>
+                </div>
+                <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
+                {isLoading && <Preloader />}
             </main>
             <Footer />
-            <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
-            {isLoading && <Preloader />}
         </>
     );
 }

@@ -1,32 +1,33 @@
-.form__header {
+.form-header {
     margin: 0 auto;
     padding: 70px 0 40px;
     max-width: 396px;
+    width: 100%;
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 40px;
+    gap: 35px;
 }
 
-.form__logoLink {
+.form-header__logo-link {
     transition: opacity .2s ease;
     outline: none;
 }
 
-.form__logoLink:hover {
+.form-header__logo-link:hover {
     cursor: pointer;
     opacity: .8;
     transition: opacity .2s ease;
 }
 
-.form__logoLink:focus img {
+.form-header__logo-link:focus img {
     border-radius: 20%;
     box-shadow: 0 0 10px 2px rgba(61, 220, 132, .5);
 }
 
-.form__logo {
+.form-header__logo {
     margin: 0;
     padding: 0;
     width: 38px;
@@ -34,7 +35,7 @@
     object-position: center;
 }
 
-.form__title {
+.form-header__title {
     margin: 0;
     padding: 0;
     color: #FFF;
@@ -43,7 +44,7 @@
     line-height: normal;
 }
 
-.form__form {
+.form {
     margin: 0 auto;
     padding: 0 0 70px;
     max-width: 396px;
@@ -193,49 +194,49 @@
 }
 
 @media screen and (max-width: 1000px) {
-    .form__header {
+    .form-header {
         padding-top: 150px;
     }
 
-    .form__form {
+    .form {
         padding-bottom: 150px;
     }
 }
 
 @media screen and (max-width: 800px) {
-    .form__header {
+    .form-header {
         padding-top: 232px;
     }
 
-    .form__form {
+    .form {
         padding-bottom: 232px;
     }
 }
 
 @media screen and (max-width: 650px) {
-    .form__header {
+    .form-header {
         padding: 150px 0 60px;
     }
 
-    .form__form {
+    .form {
         padding-bottom: 150px;
         gap: 130px;
     }
 }
 
 @media screen and (max-width: 500px) {
-    .form__header {
+    .form-header {
         padding: 58px 0 80px;
         width: 81.25%;
         align-items: center;
         gap: 50px;
     }
 
-    .form__title {
+    .form-header__title {
         text-align: center;
     }
 
-    .form__form {
+    .form {
         padding-bottom: 30px;
         width: 81.25%;
         gap: 179px;

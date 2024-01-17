@@ -101,10 +101,9 @@
     line-height: 18px;
 }
   
-.search-form__checkbox-button {
+.search-form__checkbox {
     margin: 0;
     padding: 0;
-    border: none;
     width: 36px;
     height: 20px;
     border-radius: 20px;
@@ -113,29 +112,29 @@
     transition: background-color .2s, opacity .2s ease;
 }
 
-.search-form__checkbox-button:hover {
-    opacity: .8;
-    cursor: pointer;
-    transition: opacity .2s ease;
-}
-
-.search-form__checkbox-button:focus {
-    outline: none;
+.search-form__checkbox:focus-within {
     box-shadow: 0 0 15px rgba(61, 220, 132, .5);
 }
 
-.search-form__checkbox-button_off {
+.search-form__checkbox:hover {
+    opacity: .8;
+    transition: opacity .2s ease;
+}
+
+.search-form__checkbox_off {
     background-color: #343434;
     transition: background-color .2s ease;
 }
 
-.search-form__checkbox-button_off:focus {
+.search-form__checkbox_off:focus {
     box-shadow: 0 0 15px rgba(255, 255, 255, .5);
 }
 
-.search-form__checkbox-toggle {
+.search-form__checkbox-button {
     margin: 0;
     padding: 0;
+    border: none;
+    outline: none;
     width: 16px;
     height: 16px;
     border-radius: 50px;
@@ -143,10 +142,11 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    transition: background-color .2s, transform .2s ease;
+    transition: background-color .2s, transform .2s ease;    
+    cursor: pointer;
 }
 
-.search-form__checkbox-toggle_off {
+.search-form__checkbox-button_off {
     background-color: #A0A0A0;
     transform: translateX(-16px);
     transition: background-color .2s, transform .2s ease;

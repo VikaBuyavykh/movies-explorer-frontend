@@ -8,4 +8,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
 }

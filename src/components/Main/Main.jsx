@@ -19,9 +19,9 @@ export default function Main({ isThemeBlue, onOpenClick, onCloseClick, isPopupVi
                 <Techs />
                 <AboutMe />
                 <Portfolio />
+                <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
             </main>
             <Footer />
-            <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
         </>
     );
 }

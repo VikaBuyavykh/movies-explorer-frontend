@@ -13,11 +13,11 @@ export default function SavedMovies({ onOpenClick, onCloseClick, isPopupVisible,
             <Header onOpenClick={onOpenClick} isAuthorized={isAuthorized} />
             <main className="saved-movies">
                 <SearchForm />
-                <MoviesCardList cards={savedCards}/>
+                <MoviesCardList isSavedMovies='true' cards={savedCards}/>
+                <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
+                {isLoading && <Preloader />}
             </main>
             <Footer />
-            <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
-            {isLoading && <Preloader />}
         </>
     );
 }

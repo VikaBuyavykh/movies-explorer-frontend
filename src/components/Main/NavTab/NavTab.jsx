@@ -2,7 +2,7 @@ import './NavTab.css';
 
 export default function NavTab() {
     return (
-        <section className="nav-tab">
+        <div className="nav-tab">
             <nav className="nav-tab__menu">
                 <ul>
                     <li>
@@ -16,6 +16,6 @@ export default function NavTab() {
                     </li>
                 </ul>
             </nav>
-        </section>
+        </div>
     );
 }

@@ -13,6 +13,7 @@
     box-sizing: border-box;
     grid-template-columns: repeat(3, 364px);
     grid-template-rows: repeat(auto-fit, 281px);
+    grid-auto-rows: unset;
     gap: 37px 24px;
     justify-content: center;
 }
@@ -22,8 +23,6 @@
         grid-template-columns: repeat(2, 339px);
         grid-template-rows: repeat(auto-fit, 262px);
         gap: 30px;
-        max-height: 1144px;
-        overflow: hidden;
     }
 
     .movies-card-list {
@@ -36,7 +35,6 @@
         grid-template-columns: 300px;
         grid-template-rows: repeat(auto-fit, 237px);
         gap: 14px;
-        max-height: 1241px;
     }
 
     .movies-card-list {
