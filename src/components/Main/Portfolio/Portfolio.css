@@ -1,0 +1,117 @@
+.portfolio {
+    margin: 0 auto;
+    padding: 0 0 120px;
+    width: 89%;
+    max-width: 1140px;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 50px;
+}
+
+.portfolio__title {
+    margin: 0;
+    padding: 0;
+    color: #8B8B8B;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.portfolio__list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.portfolio__list-item {
+    margin: 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #424242;
+    width: 100%;
+}
+
+.portfolio__list-item:first-of-type {
+    padding-top: 0;
+}
+
+.portfolio__list-item:last-of-type {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.portfolio__text-link {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-decoration: none;
+    color: #FFF;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 50px;
+    letter-spacing: -1.2px;
+    transition: opacity .2s ease;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.portfolio__text-link:hover {
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity .2s ease;
+}
+
+.portfolio__text-link p {
+    margin: 0;
+}
+
+@media screen and (max-width: 800px) {
+    .portfolio {
+        padding-bottom: 90px;
+        width: 87%;
+    }
+
+    .portfolio__text-link {
+        font-size: 28px;
+        letter-spacing: -1.12px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .portfolio__title {
+        font-size: 14px;
+    }
+
+    .portfolio__text-link {
+        font-size: 18px;
+        line-height: 28px;
+        letter-spacing: -0.72px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .portfolio {
+        padding-bottom: 70px;
+        width: 90.625%;
+        gap: 40px;
+    }
+
+    .portfolio__list {
+        gap: 5px;
+    }
+
+    .portfolio__list-item {
+        padding: 17px 0;
+    }
+}

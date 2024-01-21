@@ -1,0 +1,104 @@
+.movies-card {
+    margin: 0;
+    padding: 0 0 16px;
+    border-radius: 6px;
+    background: #222;
+    box-shadow: 0px 4px 30px 0px rgba(0, 0, 0, 0.08);
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.movies-card_cursor:hover {
+    cursor: pointer;
+}
+
+.movies-card__img {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.movies-card__info {
+    margin: 0;
+    padding: 0 16px;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.movies-card__name {
+    margin: 0;
+    padding: 0;
+    max-width: 275px;
+    color: #FFF;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.movies-card__button {
+    margin: 0;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    border: none;
+    background-image: url(../../images/like-button-off.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: opacity .2s ease;
+}
+
+.movies-card__button:hover {
+    cursor: pointer;
+    opacity: .8;
+    transition: opacity .2s ease;
+}
+
+.movies-card__button_like {
+    background-image: url(../../images/like-button-on.svg);
+}
+
+.movies-card__button_none {
+    background-image: none
+}
+
+.movies-card:hover .movies-card__button_none {
+    background-image: url(../../images/delete-button.svg);
+    background-size: inherit;
+}
+
+.movies-card__duration {
+    margin: 0;
+    padding: 0 16px;
+    color: #8B8B8B;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+@media screen and (max-width: 767px) {
+    .movies-card {
+        padding-bottom: 14px;
+        gap: 6px;
+    }
+
+    .movies-card__name {
+        font-size: 12px;
+    }
+
+    .movies-card__duration {
+        font-size: 10px;
+    }
+}
