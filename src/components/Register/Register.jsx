@@ -1,42 +1,16 @@
 import Form from '../Form/Form';
-import { useForm } from '../../utils/useFormHook';
 import handleInput from '../../utils/validation';
 import { nameRegex } from '../../utils/regex';
-import { mainApi } from '../../utils/MainApi';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 
-export default function Register({ setIsAuthorized }) {
-    const [apiErrorText, setApiErrorText] = useState('');
-    const {values, handleChange} = useForm({ name: '', email: '', password: '' });
-    const navigate = useNavigate();
-    
-    function handleRegister() {
-        const {name, email, password} = values;
-        mainApi.register(name, email, password).then((response) => {
-            mainApi.authorize(email, password).then((res) => {
-                localStorage.setItem('token', res.token);
-                setIsAuthorized(true);
-                navigate('/movies');
-            }).catch(console.error);
-        }).catch((error) => {
-            if (error === 'Ошибка: 409') {
-                setApiErrorText('Пользователь с таким email уже существует.')
-            } else if (error === 'Ошибка: 400') {
-                setApiErrorText('При регистрации пользователя произошла ошибка.');
-            } else {
-                setApiErrorText('На сервере произошла ошибка.');
-            }
-        })
-    }
-
+export default function Register({ onInput, isSubmitAvailable, authApiErrorText, values, handleChange, onSubmit }) {
     return (
-        <Form 
-            setApiErrorText={setApiErrorText}
-            apiErrorText={apiErrorText}
+        <Form
+            onInput={onInput}
+            isSubmitAvailable={isSubmitAvailable}
+            authApiErrorText={authApiErrorText}
             values={values}
             handleChange={handleChange}
-            onSubmit={handleRegister}
+            onSubmit={onSubmit}
             name="register"
             titleText="Добро пожаловать!"
             buttonText="Зарегистрироваться"

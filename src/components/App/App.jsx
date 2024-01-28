@@ -6,147 +6,116 @@ import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { mainApi } from '../../utils/MainApi';
 import moviesApi from '../../utils/MoviesApi';
+import { mainApi } from '../../utils/MainApi';
+import { useForm } from '../../utils/useFormHook';
 import { CurrentUserContext } from '../../utils/CurrentUserContext';
-import { AppContext } from '../../utils/AppContext';
 import ProtectedRouteElement from '../../utils/ProtectedRoute';
 
 function App() {
   const navigate = useNavigate();
 
-  const initialButtonState = () => {
-    if (localStorage.buttonState) {
-      return JSON.parse(localStorage.getItem('buttonState'));
-    } else {
-      return true;
-  }
-}
-  const initialSearchQuery = () => {
-    if (localStorage.getItem('searchQuery')) {
-        return localStorage.getItem('searchQuery');
-    } else {
-      return '';
-    }
-  }
-  const checkboxDependentCards = () => {
-    if (localStorage.getItem('checkboxDependentCards')) {
-        return JSON.parse(localStorage.getItem('checkboxDependentCards'));
-    } else {
-        return [];
-    }
-  }
-  const checkboxIndipendentCards = () => {
-    if (localStorage.getItem('checkboxIndipendentCards')) {
-        return JSON.parse(localStorage.getItem('checkboxIndipendentCards'));
-    } else {
-        return [];
-    } 
-  }
-
-  const [popupVisibility, setPopupVisibility] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
+  const {values, handleChange} = useForm({ name: '', email: '', password: '' });
+  const [authApiErrorText, setAuthApiErrorText] = useState('');
+  const [isSubmitAvailable, setIsSubmitAvailable] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [savedCards, setSavedCards] = useState([]);
-  const [resultError, setResultError] = useState('');
-  const [notFoundText, setNotFoundText] = useState('');
-  const [errorText, setErrorText] = useState('');
-  const [cards, setCards] = useState([]);
-  const [nameFilteredCards, setNameFilteredCards] = useState(checkboxIndipendentCards);
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-  const [buttonState, setButtonState] = useState(initialButtonState);
+  const [formAvailability, setFormAvailability] = useState(false);
 
-  function handlePopupOpen() {
-    setPopupVisibility(true);
+  function checkValidity(e) {
+    setAuthApiErrorText('');
+    const form = e.target.form;
+    const formButton = form.querySelector('button[type="submit"]');
+    const isFormValid = form.checkValidity();
+    if (isFormValid) {
+      setIsSubmitAvailable(true);
+      formButton.removeAttribute('disabled');
+    } else {
+      setIsSubmitAvailable(false);
+      formButton.setAttribute('disabled', true);
+    }
   }
 
-  function handlePopupClose() {
-    setPopupVisibility(false);
-  }  
-
-  const mapCards = (items) => {
-    return items.map((item) => ({
-        country: item.country,
-        director: item.director,
-        duration: `${Math.trunc(item.duration/60)}ч ${item.duration % 60}мин`,
-        mins: item.duration,
-        year: item.year,
-        description: item.description,
-        image: `https://api.nomoreparties.co${item.image.url}`,
-        trailer: item.trailerLink,
-        nameRU: item.nameRU,
-        nameEN: item.nameEN,
-        thumbnail: `https://api.nomoreparties.co${item.image.formats.thumbnail.url}`,
-        movieId: item.id
-    }));
-  };
-
-  const filterCards = (items) => {
-    return items.filter((item) => item.nameRU.toLowerCase().includes(searchQuery.toLowerCase()) || item.nameEN.toLowerCase().includes(searchQuery.toLowerCase()));
-  };
-
-  const shortFilmsFilter = (items) => {
-    return items.filter((item) => item.mins <= 40);
-}
-
-  const checkboxFilter = useCallback(() => {
-    if (buttonState) {
-        setCards(shortFilmsFilter(nameFilteredCards));
-    } else {
-        setCards(nameFilteredCards);
-    }
-    localStorage.setItem('checkboxIndipendentCards', JSON.stringify(nameFilteredCards));
-}, [buttonState, nameFilteredCards]);
-
-  function handleSearchSubmit() {
-    setResultError('');
-    setNotFoundText('');
+  function handleLogOut() {
+    localStorage.clear();
+    setButtonState(false);
+    setButtonSavedMoviesState(false);
+    setSearchQuery('');
+    setSearchQuerySavedPage('');
     setCards([]);
-    if (searchQuery === '') {
-      setErrorText('Нужно ввести ключевое слово');
-    } else {
-      setIsLoading(true);
-      moviesApi.getCards()
-      .then((data) => {
-        setNotFoundText('Ничего не найдено');
-        setNameFilteredCards(filterCards(mapCards(data)));
-        checkboxFilter();
-        localStorage.setItem('searchQuery', searchQuery);
-      })
-      .catch((error) => {
-        console.log(error);
-        setResultError('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-    }
+    setCardsSavedPage([]);
+    setNotFoundResult(false);
+    setNotFoundResultSavedPage(false);
+    setResultError(false);
+    setSearchFormErrorText('');
+    setSearchFormSavedPageErrorText('');
+    navigate('/');
+    setIsAuthorized(false);
   }
 
-  function handleClickSave({ isLiked, setIsLiked, country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId }) {
+  function handleEditProfile(profileValues) {
     const token = localStorage.getItem('token');
-    if (!isLiked) {
-        setIsLiked(true);
-        mainApi.saveMovie({
-            country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId
-        }, token).catch(console.error);
-    } else {
-        savedCards.forEach((item) => {
-            if (item.movieId === movieId) {
-                mainApi.deleteMovie(item._id, token).catch(console.error);
-            };
-        })
-        setIsLiked(false);
-    }
+    mainApi.updateProfile({ name: profileValues.name, email: profileValues.email }, token).then(() => {
+      setCurrentUser({ name: profileValues.name, email: profileValues.email })
+      setFormAvailability(false);
+      document.querySelector('#fieldset').setAttribute('disabled', true);
+    }).catch((error) => {
+      if (error === 'Ошибка: 409') {
+        setAuthApiErrorText('Пользователь с таким email уже существует.');
+      } else if (error === 'Ошибка: 500') {
+        setAuthApiErrorText('На сервере произошла ошибка.');
+      } else {
+        setAuthApiErrorText('При обновлении профиля произошла ошибка.');
+      }
+    })
   }
 
-  useEffect(() => {
-    checkboxFilter();
-    localStorage.setItem('buttonState', buttonState);
-  }, [buttonState, checkboxFilter]);  
+  function handleEditClick() {
+    document.querySelector('#fieldset').removeAttribute('disabled');
+    setFormAvailability(true);
+  }
+
+  function handleRegister() {
+    const {name, email, password} = values;
+    mainApi.register(name, email, password).then((response) => {
+      mainApi.authorize(email, password).then((res) => {
+        localStorage.setItem('token', res.token);
+        setIsAuthorized(true);
+        navigate('/movies');
+      }).catch(console.error);
+    }).catch((error) => {
+      if (error === 'Ошибка: 409') {
+        setAuthApiErrorText('Пользователь с таким email уже существует.')
+      } else if (error === 'Ошибка: 400') {
+        setAuthApiErrorText('При регистрации пользователя произошла ошибка.');
+      } else {
+        setAuthApiErrorText('На сервере произошла ошибка.');
+      }
+    })
+  }
+
+  function handleLogin() {
+    const {email, password} = values;
+    mainApi.authorize(email, password).then((response) => {
+      if (!response.token) {
+        setAuthApiErrorText('При авторизации произошла ошибка. Токен не передан или передан не в том формате.');
+      } else {
+        localStorage.setItem('token', response.token);
+        setIsAuthorized(true);
+        navigate('/movies');
+      }
+    }).catch((error) => {
+      if (error === 'Ошибка: 401') {
+        setAuthApiErrorText('Вы ввели неправильный логин или пароль')
+      } else if (error === 'Ошибка: 500') {
+        setAuthApiErrorText('На сервере произошла ошибка.')
+      } else {
+        setAuthApiErrorText('При авторизации произошла ошибка. Переданный токен некорректен.')
+      }
+    })
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -168,30 +137,220 @@ function App() {
     }
   }, [isAuthorized]);
 
+  const [popupVisibility, setPopupVisibility] = useState(false);
+  const [buttonState, setButtonState] = useState(JSON.parse(localStorage.getItem('buttonState')) || false);
+  const [buttonSavedMoviesState, setButtonSavedMoviesState] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery') || '');
+  const [searchQuerySavedPage, setSearchQuerySavedPage] = useState('');
+  const [searchFormErrorText, setSearchFormErrorText] = useState('');
+  const [searchFormSavedPageErrorText, setSearchFormSavedPageErrorText] = useState('');
+  const [cards, setCards] = useState(JSON.parse(localStorage.getItem('cards')) || []);
+  const [savedCards, setSavedCards] = useState([]);
+  const [cardsSavedPage, setCardsSavedPage] = useState([]);
+  const [resultError, setResultError] = useState(false);
+  const [notFoundResult, setNotFoundResult] = useState(false);
+  const [notFoundResultSavedPage, setNotFoundResultSavedPage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingSavedPage, setIsLoadingSavedPage] = useState(false);
+
+  function handlePopupOpen() {
+    setPopupVisibility(true);
+  }
+
+  function handlePopupClose() {
+    setPopupVisibility(false);
+  }
+
+  function handleCheckboxClick(e) {
+    e.preventDefault();
+    if (!buttonState) {
+      setButtonState(true);
+    } else {
+      setButtonState(false);
+    }
+  };
+
+  function handleCheckboxSavedPageClick(e) {
+    e.preventDefault();
+    if (!buttonSavedMoviesState) {
+      setButtonSavedMoviesState(true);
+    } else {
+      setButtonSavedMoviesState(false);
+    }
+  };
+
+  function handleSearchInputChange(e) {
+    setSearchQuery(e.target.value);
+    if (e.target.value !== '') {
+        setSearchFormErrorText('');
+    } else {
+      setSearchFormErrorText('Нужно ввести ключевое слово');
+    }
+  }
+
+  function handleSearchInputSavedPageChange(e) {
+    setSearchQuerySavedPage(e.target.value);
+    if (e.target.value !== '') {
+      setSearchFormSavedPageErrorText('');
+    } else {
+      setSearchFormSavedPageErrorText('Нужно ввести ключевое слово');
+    }
+  }
+
+  const mapCards = (items) => {
+    return items.map((item) => ({
+        country: item.country,
+        director: item.director,
+        duration: item.duration,
+        year: item.year,
+        description: item.description,
+        image: `https://api.nomoreparties.co${item.image.url}`,
+        trailer: item.trailerLink,
+        nameRU: item.nameRU,
+        nameEN: item.nameEN,
+        thumbnail: `https://api.nomoreparties.co${item.image.formats.thumbnail.url}`,
+        movieId: item.id
+    }));
+  };
+
+  const mapCardsSavePage = (items) => {
+    return items.map((item) => ({
+        country: item.country,
+        director: item.director,
+        duration: item.duration,
+        year: item.year,
+        description: item.description,
+        image: item.image,
+        trailer: item.trailerLink,
+        nameRU: item.nameRU,
+        nameEN: item.nameEN,
+        thumbnail: item.thumbnail,
+        movieId: item.movieId,
+        id: item._id
+    }));
+  };
+
+  const nameFilter = (items) => {
+    return items.filter((item) => item.nameRU.toLowerCase().includes(searchQuery.toLowerCase()) || item.nameEN.toLowerCase().includes(searchQuery.toLowerCase()));
+  };
+
+  const nameFilterSavedPage = (items) => {
+    return items.filter((item) => item.nameRU.toLowerCase().includes(searchQuerySavedPage.toLowerCase()) || item.nameEN.toLowerCase().includes(searchQuerySavedPage.toLowerCase()));
+  };
+
+  const shortFilmsFilter = (items) => {
+    return items.filter((item) => item.duration <= 40);
+  }
+
+  function handleSearchSubmit(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    setResultError(false);
+    setNotFoundResult(false);
+    setCards([]);
+    if (searchQuery !== '') {
+      setIsLoading(true);
+      moviesApi.getCards().then((res) => {
+        setNotFoundResult(true);
+        if (!buttonState) {
+          setCards(nameFilter(mapCards(res)));
+        } else {
+          setCards(shortFilmsFilter(nameFilter(mapCards(res))))
+        }
+        localStorage.setItem('buttonState', buttonState);
+        localStorage.setItem('searchQuery', searchQuery);
+      })
+      .catch(() => {
+        setResultError(true);
+      })
+      .finally(()=> {
+        setIsLoading(false);
+      })
+    }
+  };
+
+  function handleSearchSavedPageSubmit(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    setIsLoadingSavedPage(true);
+    if (searchQuerySavedPage !== '') {
+      let savedPageMovies;
+      if (!buttonSavedMoviesState) {
+        savedPageMovies = nameFilterSavedPage(mapCardsSavePage(savedCards));
+      } else {
+        savedPageMovies = shortFilmsFilter(nameFilterSavedPage(mapCardsSavePage(savedCards)));
+      }      
+      setCardsSavedPage(savedPageMovies);
+      if (savedPageMovies.length === 0) {
+        setNotFoundResultSavedPage(true);
+      } else {
+        setNotFoundResultSavedPage(false); 
+      }
+    }
+    setTimeout(() => {
+      setIsLoadingSavedPage(false);
+    }, 500);
+  }
+
+  useEffect(() => {
+    handleSearchSavedPageSubmit();
+  }, [buttonSavedMoviesState])
+
+  useEffect(() => {
+    handleSearchSubmit();
+  }, [buttonState])
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       mainApi.getMovies(token).then(setSavedCards).catch(console.error);
     }
-    console.log(savedCards);
-  }, [isAuthorized]);
+  }, [isAuthorized, isLoading]);
+
+  function handleClickSave(setIsLiked, country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId) {
+    const token = localStorage.getItem('token');
+    mainApi.saveMovie({
+      country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId
+    }, token).then((newSavedCard) => {
+      setSavedCards([...savedCards, newSavedCard]);
+      setCardsSavedPage([...cardsSavedPage, {...newSavedCard, trailer: newSavedCard.trailerLink, id: newSavedCard._id}]);
+      setIsLiked(true);
+    }).catch(console.error);
+  }
+
+  function handleClickDelete(setIsLiked, id) {
+    const token = localStorage.getItem('token');
+    mainApi.deleteMovie(id, token).then(() => {
+      setSavedCards((state) => state.filter((c) => c._id !== id && c));
+      setCardsSavedPage((state) => state.filter((c) => c.id !== id && c));
+      setIsLiked(false);
+    }).catch(console.error)
+  }
+
+  function handleClickUnsave(id) {
+    const token = localStorage.getItem('token');
+    mainApi.deleteMovie(id, token).then(() => {
+      setCardsSavedPage((state) => state.filter((c) => c.id !== id && c));
+      setSavedCards((state) => state.filter((c) => c._id !== id && c));
+    }).catch(console.error)
+  }
 
   return (
-    <AppContext.Provider value={{savedCards, cards, errorText, isLoading}}>
+    <div className="app">
       <CurrentUserContext.Provider value={currentUser}>
-        <div className="app">
-          <Routes>
-            <Route path='/' element={<Main isThemeBlue='true' onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
-            <Route path='/movies' element={<ProtectedRouteElement component={Movies} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} savedCards={savedCards} onClickSave={handleClickSave} onSubmit={handleSearchSubmit} resultError={resultError} notFoundText={notFoundText} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setErrorText={setErrorText} buttonState={buttonState} setButtonState={setButtonState} />} />
-            <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} searchQuery={searchQuery} setSearchQuery={setSearchQuery} isAuthorized={isAuthorized} buttonState={buttonState} setButtonState={setButtonState} />} />
-            <Route path='/profile' element={<ProtectedRouteElement component={Profile} setIsAuthorized={setIsAuthorized} setCurrentUser={setCurrentUser} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
-            <Route path='/signin' element={<Login setIsAuthorized={setIsAuthorized} />} />
-            <Route path='/signup' element={<Register setIsAuthorized={setIsAuthorized} />} />
-            <Route path='*' element={<NotFoundPage />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path='/' element={<Main isThemeBlue='true' onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
+          <Route path='/movies' element={<ProtectedRouteElement component={Movies} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
+          <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
+          <Route path='/profile' element={<ProtectedRouteElement component={Profile} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
+          <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
+          <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
+          <Route path='*' element={<NotFoundPage />} />
+        </Routes>
       </CurrentUserContext.Provider>
-      </AppContext.Provider>
+    </div>
   );
 }
 

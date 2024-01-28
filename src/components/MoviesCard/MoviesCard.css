@@ -15,10 +15,17 @@
     cursor: pointer;
 }
 
+.movies-card__trailer-link {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 203px;
+}
+
 .movies-card__img {
     margin: 0;
     padding: 0;
-    height: 203px;
+    height: 100%;
     width: 100%;
     object-fit: cover;
     object-position: center;
@@ -90,7 +97,7 @@
 }
 
 @media screen and (max-width: 1279px) {
-    .movies-card__img {
+    .movies-card__trailer-link {
         height: 190px;
     }
 }
@@ -101,7 +108,7 @@
         gap: 6px;
     }
 
-    .movies-card__img {
+    .movies-card__trailer-link {
         height: 168px;
     }
 

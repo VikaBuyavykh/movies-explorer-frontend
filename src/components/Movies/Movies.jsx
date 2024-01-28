@@ -5,14 +5,12 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Popup from '../Popup/Popup';
 import Preloader from '../Preloader/Preloader';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import throttle from '../../utils/throttle';
-import { AppContext } from '../../utils/AppContext';
 
-export default function Movies({ buttonState, setButtonState, setErrorText, searchQuery, setSearchQuery, notFoundText, resultError, onSubmit, onClickSave, onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
-    const { cards, errorText, isLoading } = React.useContext(AppContext);
-    const [isMore, setIsMore] = useState(false);   
-
+export default function Movies({ onClickDelete, onClickSave, onSearchInputChange, onCheckboxClick, resultError, notFoundResult, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText,  onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized, cards, savedCards }) {
+    const [isMore, setIsMore] = useState(false); 
+    
     let initialNumberOfCards;
     let initialAddIndex;
 
@@ -47,30 +45,25 @@ export default function Movies({ buttonState, setButtonState, setErrorText, sear
 
     window.addEventListener('resize', optimizedRecalculate);
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        onSubmit();
-    };
-
     function handleMoreClick() {
         setNumberOfCards(numberOfCards + addIndex);
     };
 
     useEffect(() => {
-    if (cards.length > numberOfCards) {
-        setIsMore(true);
-    } else {
-        setIsMore(false);
-    }
-    localStorage.setItem('checkboxDependentCards', JSON.stringify(cards));
-    }, [cards, numberOfCards]);    
-
+        if (cards.length > numberOfCards) {
+            setIsMore(true);
+        } else {
+            setIsMore(false);
+        }
+        localStorage.setItem('cards', JSON.stringify(cards));
+    }, [cards, numberOfCards]);
+    
     return (
         <>
             <Header onOpenClick={onOpenClick} isAuthorized={isAuthorized} />
             <main className="movies">
-                <SearchForm buttonState={buttonState} setButtonState={setButtonState} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearchFormSubmit={handleSubmit} errorText={errorText} setErrorText={setErrorText} />
-                <MoviesCardList onClickSave={onClickSave} numberOfCards={numberOfCards} resultError={resultError} notFoundText={notFoundText} />
+                <SearchForm onSearchInputChange={onSearchInputChange} onCheckboxClick={onCheckboxClick} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} />
+                <MoviesCardList onClickDelete={onClickDelete} onClickSave={onClickSave} numberOfCards={numberOfCards} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} />
                 {isMore && (
                     <div className="movies__more-section">
                             <button type="button" className="movies__more-button" onClick={handleMoreClick}>Ещё</button>
