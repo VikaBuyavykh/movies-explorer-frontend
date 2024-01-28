@@ -1,0 +1,1 @@
+export const nameRegex = '(-*[a-zA-Z А-Яа-яЁё]*)*';

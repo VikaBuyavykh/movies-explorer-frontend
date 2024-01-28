@@ -92,16 +92,12 @@
     font-size: 10px;
     font-weight: 400;
     line-height: normal;
-    visibility: hidden;
 }
 
 .profile__api-error {
+    min-height: 12px;
     margin-bottom: 10px;
     text-align: center;
-}
-  
-.error-visible {
-    visibility: visible;
 }
 
 .profile__submit-button {
@@ -128,6 +124,10 @@
 
 .profile__submit-button:focus {
     box-shadow: 0 0 15px rgba(255, 255, 255, .5);
+}
+
+.profile__submit-button_inactive {
+    opacity: .8;
 }
 
 .profile__edit-button {

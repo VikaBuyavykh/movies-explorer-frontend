@@ -1,11 +1,7 @@
 import './SearchForm.css';
 import searchButtonPath from '../../images/search-button.svg';
-import { useState } from 'react';
 
-export default function SearchForm() {
-    const [buttonState, setButtonState] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-
+export default function SearchForm({ buttonState, setButtonState, searchQuery, setSearchQuery, handleSearchFormSubmit, errorText, setErrorText }) {
     function handleButtonChange(e) {
         e.preventDefault();
         if (!buttonState) {
@@ -16,20 +12,20 @@ export default function SearchForm() {
 
     function handleChange(e) {
         setSearchQuery(e.target.value);
+        if (e.target.value !== '') {
+            setErrorText('');
+        }
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-    };
-
     return (
-        <form onSubmit={handleSubmit} className="search-form">
+        <form onSubmit={handleSearchFormSubmit} className="search-form" noValidate>
             <fieldset className="search-form__fieldset search-form__search">
                 <input onChange={handleChange} value={searchQuery} type="search" name="search" placeholder="Фильм" className="search-form__search-field" required />
                 <button type="submit" className="search-form__search-button">
                     <img src={searchButtonPath} alt="Иконка поиска по запросу" />
                 </button>
             </fieldset>
+            <p className="search-form__error">{errorText}</p>
             <fieldset className="search-form__fieldset search-form__checkbox-field">
                 <div className={`search-form__checkbox ${!buttonState ? 'search-form__checkbox_off' : ''}`}>
                     <button type="button" onClick={handleButtonChange} className={`search-form__checkbox-button ${!buttonState ? 'search-form__checkbox-button_off' : ''}`} />

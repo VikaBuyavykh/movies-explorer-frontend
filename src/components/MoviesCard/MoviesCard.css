@@ -18,6 +18,7 @@
 .movies-card__img {
     margin: 0;
     padding: 0;
+    height: 203px;
     width: 100%;
     object-fit: cover;
     object-position: center;
@@ -88,10 +89,20 @@
     line-height: normal;
 }
 
+@media screen and (max-width: 1279px) {
+    .movies-card__img {
+        height: 190px;
+    }
+}
+
 @media screen and (max-width: 767px) {
     .movies-card {
         padding-bottom: 14px;
         gap: 6px;
+    }
+
+    .movies-card__img {
+        height: 168px;
     }
 
     .movies-card__name {

@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { useForm } from '../../utils/useFormHook';
 import Header from '../Header/Header';
 import Popup from '../Popup/Popup';
@@ -5,40 +6,72 @@ import './Profile.css';
 import handleInput from '../../utils/validation';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CurrentUserContext } from '../../utils/CurrentUserContext';
+import { mainApi } from '../../utils/MainApi';
 
-export default function Profile({ onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
+export default function Profile({ setIsAuthorized, setCurrentUser, onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
+    const currentUser = React.useContext(CurrentUserContext);
+    const [apiErrorMessage, setApiErrorMessage] = useState('');
+    const [isSubmitAvailable, setIsSubmitAvailable] = useState(false);
     const navigate = useNavigate();
-    const {values, handleChange, setValues} = useForm({ name: "Виталий", email: "pochta@yandex.ru" });
+    const {values, handleChange, setValues} = useForm({ name: currentUser.name, email: currentUser.email });
     const [formAvailability, setFormAvailability] = useState(false);
-    //the following constants are temporary, both of them are hardcode
-    const hasApiError = true;
-    const apiErrorMessage = 'При обновлении профиля произошла ошибка.';
+
+    const fieldsetElement = document.querySelector('#fieldset');
+
+    useEffect(() => {
+        setValues({ name: currentUser.name, email: currentUser.email })
+    }, [currentUser, setValues])
 
     function handleSubmit(e) {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        mainApi.updateProfile({ name: values.name, email: values.email }, token).then(() => {
+            setCurrentUser({ name: values.name, email: values.email })
+            setFormAvailability(false);
+            fieldsetElement.setAttribute('disabled', true);
+        }).catch((error) => {
+            if (error === 'Ошибка: 409') {
+                setApiErrorMessage('Пользователь с таким email уже существует.');
+            } else if (error === 'Ошибка: 500') {
+                setApiErrorMessage('На сервере произошла ошибка.');
+            } else {
+                setApiErrorMessage('При обновлении профиля произошла ошибка.');
+            }
+        })
+    }
+
+    function checkValidity(e) {
+        setApiErrorMessage('');
+        const form = e.target.form;
+        const formButton = form.querySelector('.profile__submit-button');
+        const isFormValid = form.checkValidity();
+        if (isFormValid) {
+            setIsSubmitAvailable(true);
+            formButton.removeAttribute('disabled');
+        } else {
+            setIsSubmitAvailable(false);
+            formButton.setAttribute('disabled', true);
+        }
     }
 
     function logOut() {
         navigate('/');
+        localStorage.clear()
+        setIsAuthorized(false);
     }
 
     function handleClick() {
-        const element = document.querySelector('#fieldset');
-        if (!formAvailability) {
-            element.removeAttribute('disabled');
-            setFormAvailability(true);
-        } else {
-            element.setAttribute('disabled', true);
-            setFormAvailability(false);
-        }
+        fieldsetElement.removeAttribute('disabled');
+        setFormAvailability(true);
     }
 
     return (
         <>
             <Header onOpenClick={onOpenClick} isAuthorized={isAuthorized} />
             <main className="profile">
-                <h1 className="profile__title">Привет, Виталий!</h1>
-                <form className="profile__form" onSubmit={handleSubmit} noValidate>
+                <h1 className="profile__title">{`Привет, ${currentUser.name}!`}</h1>
+                <form className="profile__form" onInput={checkValidity} onSubmit={handleSubmit} noValidate>
                     <fieldset id="fieldset" className="profile__fieldset" disabled>
                         <label className="profile__label">
                             Имя
@@ -55,8 +88,8 @@ export default function Profile({ onOpenClick, onCloseClick, isPopupVisible, isA
                         {formAvailability
                             ?
                             <>
-                                <p className={`profile__error profile__api-error ${hasApiError ? 'error-visible' : ''}`}>{apiErrorMessage}</p>
-                                <button type="submit" onClick={handleClick} className="profile__submit-button">Сохранить</button>
+                                <p className='profile__error profile__api-error'>{apiErrorMessage}</p>
+                                <button type="submit" className={`profile__submit-button ${isSubmitAvailable ? 'profile__submit-button_inactive' : ''}`} disabled>Сохранить</button>
                             </>
                             :
                             <>

@@ -1,14 +1,29 @@
 import './Form.css';
 import logoPath from '../../images/logo.svg';
 import { Link } from 'react-router-dom';
-import { useForm } from '../../utils/useFormHook';
 import handleInput from '../../utils/validation';
+import { useState } from 'react';
 
-export default function Form({ name, titleText, children, buttonText, questionText, linkText, linkTo }) {
-    const {values, handleChange, setValues} = useForm({ email: 'pochta@yandex.ru', password: 'pochta@yandex.ru' });
+export default function Form({ setApiErrorText, apiErrorText, values, handleChange, onSubmit, name, titleText, children, buttonText, questionText, linkText, linkTo }) {
+    const [isSubmitAvailable, setIsSubmitAvailable] = useState(false);
 
+    function checkValidity(e) {
+        setApiErrorText('');
+        const form = e.target.form;
+        const formButton = form.querySelector('.form__button');
+        const isFormValid = form.checkValidity();
+        if (isFormValid) {
+            setIsSubmitAvailable(true);
+            formButton.removeAttribute('disabled');
+        } else {
+            setIsSubmitAvailable(false);
+            formButton.setAttribute('disabled', true);
+        }
+    }
+    
     function handleSubmit(e) {
         e.preventDefault();
+        onSubmit();
     }
 
     return (
@@ -18,7 +33,7 @@ export default function Form({ name, titleText, children, buttonText, questionTe
                 <h1 className="form-header__title">{titleText}</h1>
             </header>
             <main>
-                <form className="form" name={`${name}-form`} onSubmit={handleSubmit} noValidate>
+                <form className="form" name={`${name}-form`} onInput={checkValidity} onSubmit={handleSubmit} noValidate>
                     <div className="form__inputs-container">
                         {children}
                         <div className="form__input-group">
@@ -33,7 +48,8 @@ export default function Form({ name, titleText, children, buttonText, questionTe
                         </div>
                     </div>
                     <div className="form__button-group">
-                        <button type="submit" className="form__button">{buttonText}</button>
+                        <p className="form__api-error">{apiErrorText}</p>
+                        <button type="submit" className={`form__button ${!isSubmitAvailable ? 'form__button_inactive' : ''}`} disabled>{buttonText}</button>
                         <p className="form__text">{questionText}
                             <Link to={linkTo} className="form__link">{linkText}</Link>
                         </p>
