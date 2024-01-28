@@ -10,5 +10,11 @@
 ## Ссылки на проект
 
 IP 158.160.41.97
+
 Backend: https://api.buyavykh-diploma.nomoredomainsmonster.ru
+
 Frontend: https://buyavykh-diploma.nomoredomainsmonster.ru
+
+## Ссылка на PR
+
+https://github.com/VikaBuyavykh/movies-explorer-frontend/pull/2
