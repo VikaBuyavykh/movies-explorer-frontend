@@ -279,9 +279,6 @@ function App() {
       country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId
     }, token).then((newSavedCard) => {
       setSavedCards([...savedCards, newSavedCard]);
-      /*if (searchQuerySavedPage === searchQuery) {
-        setCardsSavedPage([...cardsSavedPage, {...newSavedCard, trailer: newSavedCard.trailerLink, id: newSavedCard._id}]);
-      }*/
       setIsLiked(true);
     }).catch(console.error);
   }
@@ -290,7 +287,6 @@ function App() {
     const token = localStorage.getItem('token');
     mainApi.deleteMovie(id, token).then(() => {
       setSavedCards((state) => state.filter((c) => c._id !== id && c));
-      //setCardsSavedPage((state) => state.filter((c) => c.id !== id && c));
       setIsLiked(false);
     }).catch(console.error)
   }
@@ -336,7 +332,6 @@ function App() {
     if (token) {
       mainApi.getMovies(token).then((data) => {
         setSavedCards(data);
-        //setCardsSavedPage(mapCardsSavePage(data));
       }).catch(console.error);
     }
   }, [isAuthorized, isLoading]);
