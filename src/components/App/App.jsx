@@ -23,6 +23,21 @@ function App() {
   const [isSubmitAvailable, setIsSubmitAvailable] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [formAvailability, setFormAvailability] = useState(false);
+  const [popupVisibility, setPopupVisibility] = useState(false);
+  const [buttonState, setButtonState] = useState(JSON.parse(localStorage.getItem('buttonState')) || false);
+  const [buttonSavedMoviesState, setButtonSavedMoviesState] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery') || '');
+  const [searchQuerySavedPage, setSearchQuerySavedPage] = useState('');
+  const [searchFormErrorText, setSearchFormErrorText] = useState('');
+  const [searchFormSavedPageErrorText, setSearchFormSavedPageErrorText] = useState('');
+  const [cards, setCards] = useState(JSON.parse(localStorage.getItem('cards')) || []);
+  const [savedCards, setSavedCards] = useState([]);
+  const [cardsSavedPage, setCardsSavedPage] = useState([]);
+  const [resultError, setResultError] = useState(false);
+  const [notFoundResult, setNotFoundResult] = useState(false);
+  const [notFoundResultSavedPage, setNotFoundResultSavedPage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingSavedPage, setIsLoadingSavedPage] = useState(false);
 
   function checkValidity(e) {
     setAuthApiErrorText('');
@@ -116,42 +131,6 @@ function App() {
       }
     })
   }
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      mainApi.tokenCheck(token).then((response) => {
-        if (response) {
-          setIsAuthorized(true);
-          navigate('/movies');
-        }
-      }).catch(() => {
-        navigate('/');
-      });
-      mainApi.getProfile(token).then((res) => {        
-        setCurrentUser({
-          name: res.name,
-          email: res.email,
-        });
-      }).catch(console.error);
-    }
-  }, [isAuthorized]);
-
-  const [popupVisibility, setPopupVisibility] = useState(false);
-  const [buttonState, setButtonState] = useState(JSON.parse(localStorage.getItem('buttonState')) || false);
-  const [buttonSavedMoviesState, setButtonSavedMoviesState] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery') || '');
-  const [searchQuerySavedPage, setSearchQuerySavedPage] = useState('');
-  const [searchFormErrorText, setSearchFormErrorText] = useState('');
-  const [searchFormSavedPageErrorText, setSearchFormSavedPageErrorText] = useState('');
-  const [cards, setCards] = useState(JSON.parse(localStorage.getItem('cards')) || []);
-  const [savedCards, setSavedCards] = useState([]);
-  const [cardsSavedPage, setCardsSavedPage] = useState([]);
-  const [resultError, setResultError] = useState(false);
-  const [notFoundResult, setNotFoundResult] = useState(false);
-  const [notFoundResultSavedPage, setNotFoundResultSavedPage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingSavedPage, setIsLoadingSavedPage] = useState(false);
 
   function handlePopupOpen() {
     setPopupVisibility(true);
@@ -294,28 +273,15 @@ function App() {
     }, 500);
   }
 
-  useEffect(() => {
-    handleSearchSavedPageSubmit();
-  }, [buttonSavedMoviesState])
-
-  useEffect(() => {
-    handleSearchSubmit();
-  }, [buttonState])
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      mainApi.getMovies(token).then(setSavedCards).catch(console.error);
-    }
-  }, [isAuthorized, isLoading]);
-
   function handleClickSave(setIsLiked, country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId) {
     const token = localStorage.getItem('token');
     mainApi.saveMovie({
       country, director, duration, year, description, image, trailerLink, nameRU, nameEN, thumbnail, movieId
     }, token).then((newSavedCard) => {
       setSavedCards([...savedCards, newSavedCard]);
-      setCardsSavedPage([...cardsSavedPage, {...newSavedCard, trailer: newSavedCard.trailerLink, id: newSavedCard._id}]);
+      /*if (searchQuerySavedPage === searchQuery) {
+        setCardsSavedPage([...cardsSavedPage, {...newSavedCard, trailer: newSavedCard.trailerLink, id: newSavedCard._id}]);
+      }*/
       setIsLiked(true);
     }).catch(console.error);
   }
@@ -324,7 +290,7 @@ function App() {
     const token = localStorage.getItem('token');
     mainApi.deleteMovie(id, token).then(() => {
       setSavedCards((state) => state.filter((c) => c._id !== id && c));
-      setCardsSavedPage((state) => state.filter((c) => c.id !== id && c));
+      //setCardsSavedPage((state) => state.filter((c) => c.id !== id && c));
       setIsLiked(false);
     }).catch(console.error)
   }
@@ -337,13 +303,51 @@ function App() {
     }).catch(console.error)
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      mainApi.tokenCheck(token).then((response) => {
+        if (response) {
+          setIsAuthorized(true);
+          navigate('/movies');
+        }
+      }).catch(() => {
+        navigate('/');
+      });
+      mainApi.getProfile(token).then((res) => {        
+        setCurrentUser({
+          name: res.name,
+          email: res.email,
+        });
+      }).catch(console.error);
+    }
+  }, [isAuthorized]);
+
+  useEffect(() => {
+    handleSearchSavedPageSubmit();
+  }, [buttonSavedMoviesState])
+
+  useEffect(() => {
+    handleSearchSubmit();
+  }, [buttonState])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      mainApi.getMovies(token).then((data) => {
+        setSavedCards(data);
+        //setCardsSavedPage(mapCardsSavePage(data));
+      }).catch(console.error);
+    }
+  }, [isAuthorized, isLoading]);
+
   return (
     <div className="app">
       <CurrentUserContext.Provider value={currentUser}>
         <Routes>
           <Route path='/' element={<Main isThemeBlue='true' onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
           <Route path='/movies' element={<ProtectedRouteElement component={Movies} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
-          <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
+          <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} mapCardsSavePage={mapCardsSavePage} setCardsSavedPage={setCardsSavedPage} setButtonSavedMoviesState={setButtonSavedMoviesState} setSearchQuerySavedPage={setSearchQuerySavedPage} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
           <Route path='/profile' element={<ProtectedRouteElement component={Profile} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
           <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
           <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
