@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './NotFoundPage.css';
 
-export default function NotFoundPage() {
+export default function NotFoundPage({ isAuthorized }) {
     const navigate = useNavigate();
     
     function goBack() {

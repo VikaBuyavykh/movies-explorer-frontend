@@ -8,7 +8,7 @@ import Preloader from '../Preloader/Preloader';
 import { useEffect, useState } from 'react';
 import throttle from '../../utils/throttle';
 
-export default function Movies({ onClickDelete, onClickSave, onSearchInputChange, onCheckboxClick, resultError, notFoundResult, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText,  onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized, cards, savedCards }) {
+export default function Movies({ setSearchFormErrorText, onClickDelete, onClickSave, onSearchInputChange, onCheckboxClick, resultError, notFoundResult, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText,  onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized, cards, savedCards }) {
     const [isMore, setIsMore] = useState(false); 
     
     let initialNumberOfCards;
@@ -57,6 +57,12 @@ export default function Movies({ onClickDelete, onClickSave, onSearchInputChange
         }
         localStorage.setItem('cards', JSON.stringify(cards));
     }, [cards, numberOfCards]);
+
+    useEffect(() => {
+        return () => {
+            setSearchFormErrorText('');
+        }
+    }, [])
     
     return (
         <>

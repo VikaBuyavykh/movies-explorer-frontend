@@ -7,11 +7,14 @@ import Popup from '../Popup/Popup';
 import Preloader from '../Preloader/Preloader';
 import { useEffect } from 'react';
 
-export default function SavedMovies({ mapCardsSavePage, setCardsSavedPage, setButtonSavedMoviesState, setSearchQuerySavedPage, notFoundResult, handleSearchSubmit, searchFormErrorText, searchQuery, onSearchInputChange, buttonState, onCheckboxClick, savedCards, cards, onClickDelete, onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized }) {    
+export default function SavedMovies({ setSearchFormSavedPageErrorText, mapCardsSavePage, setCardsSavedPage, setButtonSavedMoviesState, setSearchQuerySavedPage, notFoundResult, handleSearchSubmit, searchFormErrorText, searchQuery, onSearchInputChange, buttonState, onCheckboxClick, savedCards, cards, onClickDelete, onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized }) {    
     useEffect(() => {
         setButtonSavedMoviesState(false);
         setSearchQuerySavedPage('');
         setCardsSavedPage(mapCardsSavePage(savedCards));
+        return () => {
+            setSearchFormSavedPageErrorText('');
+        }
       }, [])
     
     return (
