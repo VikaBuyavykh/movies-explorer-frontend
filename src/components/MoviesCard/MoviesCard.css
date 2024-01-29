@@ -79,7 +79,7 @@
 }
 
 .movies-card__button_none {
-    background-image: none
+    background-image: none;
 }
 
 .movies-card:hover .movies-card__button_none {
@@ -114,6 +114,11 @@
 
     .movies-card__name {
         font-size: 12px;
+    }
+
+    .movies-card__button_none {
+        background-image: url(../../images/delete-button.svg);
+        background-size: inherit;
     }
 
     .movies-card__duration {

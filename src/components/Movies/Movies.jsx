@@ -7,6 +7,10 @@ import Popup from '../Popup/Popup';
 import Preloader from '../Preloader/Preloader';
 import { useEffect, useState } from 'react';
 import throttle from '../../utils/throttle';
+import { 
+    MIDDLE_SCREEN_WIDTH, LARGE_SCREEN_WIDTH, SMALL_SCREEN_CARDS_NUMBER, MIDDLE_SCREEN_CARDS_NUMBER,
+    LARGE_SCREEN_CARDS_NUMBER, SMALL_AND_MIDDLE_SCREEN_ADD_INDEX, LARGE_SCREEN_ADD_INDEX
+} from '../../utils/config';
 
 export default function Movies({ setSearchFormErrorText, onClickDelete, onClickSave, onSearchInputChange, onCheckboxClick, resultError, notFoundResult, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText,  onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized, cards, savedCards }) {
     const [isMore, setIsMore] = useState(false); 
@@ -15,15 +19,15 @@ export default function Movies({ setSearchFormErrorText, onClickDelete, onClickS
         let initialNumberOfCards;
         let initialAddIndex;   
 
-        if (window.innerWidth < 768) {
-            initialNumberOfCards = 5;
-            initialAddIndex = 2;
-        } else if (window.innerWidth < 1280) {
-            initialNumberOfCards = 8;
-            initialAddIndex = 2;
+        if (window.innerWidth < MIDDLE_SCREEN_WIDTH) {
+            initialNumberOfCards = SMALL_SCREEN_CARDS_NUMBER;
+            initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
+        } else if (window.innerWidth < LARGE_SCREEN_WIDTH) {
+            initialNumberOfCards = MIDDLE_SCREEN_CARDS_NUMBER;
+            initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
         } else {
-            initialNumberOfCards = 12;
-            initialAddIndex = 3;
+            initialNumberOfCards = LARGE_SCREEN_CARDS_NUMBER;
+            initialAddIndex = LARGE_SCREEN_ADD_INDEX;
         };
 
         return {initialNumberOfCards, initialAddIndex};
@@ -35,15 +39,15 @@ export default function Movies({ setSearchFormErrorText, onClickDelete, onClickS
     const [addIndex, setAddIndex] = useState(initialAddIndex);
 
     function recalculate(e) {
-        if (e.target.innerWidth < 768) {
-            setNumberOfCards(5);
-            setAddIndex(2);
-        } else if (e.target.innerWidth < 1280) {
-            setNumberOfCards(8);
-            setAddIndex(2);
+        if (e.target.innerWidth < MIDDLE_SCREEN_WIDTH) {
+            setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
+            setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
+        } else if (e.target.innerWidth < LARGE_SCREEN_WIDTH) {
+            setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
+            setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
         } else {
-            setNumberOfCards(12);
-            setAddIndex(3);
+            setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
+            setAddIndex(LARGE_SCREEN_ADD_INDEX);
         }
     };
 

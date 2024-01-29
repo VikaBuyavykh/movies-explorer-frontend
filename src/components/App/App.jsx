@@ -13,6 +13,7 @@ import { mainApi } from '../../utils/MainApi';
 import { useForm } from '../../utils/useFormHook';
 import { CurrentUserContext } from '../../utils/CurrentUserContext';
 import ProtectedRouteElement from '../../utils/ProtectedRoute';
+import { SHORT_FILM_MAX_DURATION } from '../../utils/config';
 
 function App() {
   const navigate = useNavigate();
@@ -211,7 +212,7 @@ function App() {
   };
 
   const shortFilmsFilter = (items) => {
-    return items.filter((item) => item.duration <= 40);
+    return items.filter((item) => item.duration <= SHORT_FILM_MAX_DURATION);
   }
 
   function handleSearchSubmit(e) {
