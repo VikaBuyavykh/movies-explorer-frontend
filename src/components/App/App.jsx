@@ -19,7 +19,7 @@ function App() {
   const navigate = useNavigate();
 
   const [currentUser, setCurrentUser] = useState({});
-  const {values, handleChange} = useForm({ name: '', email: '', password: '' });
+  const {values, handleChange, setValues} = useForm({ name: '', email: '', password: '' });
   const [authApiErrorText, setAuthApiErrorText] = useState('');
   const [isSubmitAvailable, setIsSubmitAvailable] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -44,9 +44,16 @@ function App() {
   function checkValidity(e) {
     setAuthApiErrorText('');
     const form = e.target.form;
+    const formErrors = form.querySelectorAll('span');
+    const formInputs = form.querySelectorAll('input');
     const formButton = form.querySelector('button[type="submit"]');
-    const isFormValid = form.checkValidity();
-    if (isFormValid) {
+    const isFormInvalid = Array.from(formErrors).some((error) => {
+      return error.textContent !== '';
+    });
+    const hasAnEmptyInput = Array.from(formInputs).some((input) => {
+      return input.value === '';
+    })
+    if (!isFormInvalid && !hasAnEmptyInput) {
       setIsSubmitAvailable(true);
       formButton.removeAttribute('disabled');
     } else {
@@ -357,8 +364,8 @@ function App() {
           <Route path='/movies' element={<ProtectedRouteElement component={Movies} setSearchFormErrorText={setSearchFormErrorText} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
           <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} setSearchFormSavedPageErrorText={setSearchFormSavedPageErrorText} mapCardsSavePage={mapCardsSavePage} setCardsSavedPage={setCardsSavedPage} setButtonSavedMoviesState={setButtonSavedMoviesState} setSearchQuerySavedPage={setSearchQuerySavedPage} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
           <Route path='/profile' element={<ProtectedRouteElement component={Profile} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
-          <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
-          <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} handleChange={handleChange} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
+          <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} setIsSubmitAvailable={setIsSubmitAvailable} values={values} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
+          <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} setIsSubmitAvailable={setIsSubmitAvailable} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
           <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </CurrentUserContext.Provider>

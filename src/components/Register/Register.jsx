@@ -1,8 +1,16 @@
 import Form from '../Form/Form';
 import handleInput from '../../utils/validation';
 import { nameRegex } from '../../utils/regex';
+import { useEffect } from 'react';
 
-export default function Register({ onInput, isSubmitAvailable, authApiErrorText, values, handleChange, onSubmit }) {
+export default function Register({ setIsSubmitAvailable, setValues, setAuthApiErrorText, onInput, isSubmitAvailable, authApiErrorText, values, handleChange, onSubmit }) {
+    useEffect(() => {
+        setIsSubmitAvailable(false);
+        return () => {
+            setAuthApiErrorText('');
+            setValues({ email: '', password: '' });
+        }
+    }, [])
     return (
         <Form
             onInput={onInput}

@@ -1,6 +1,14 @@
+import { useEffect } from "react";
 import Form from "../Form/Form";
 
-export default function Login({ onInput, isSubmitAvailable, authApiErrorText, values, handleChange, onSubmit }) {
+export default function Login({ setIsSubmitAvailable, setValues, setAuthApiErrorText, onInput, isSubmitAvailable, authApiErrorText, values, handleChange, onSubmit }) {
+    useEffect(() => {
+        setIsSubmitAvailable(false);
+        return () => {
+            setAuthApiErrorText('');
+            setValues({ email: '', password: '' });
+        }
+    }, [])
     return (
         <Form
             onInput={onInput}
