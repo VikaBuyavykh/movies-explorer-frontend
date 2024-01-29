@@ -11,19 +11,25 @@ import throttle from '../../utils/throttle';
 export default function Movies({ setSearchFormErrorText, onClickDelete, onClickSave, onSearchInputChange, onCheckboxClick, resultError, notFoundResult, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText,  onOpenClick, onCloseClick, isPopupVisible, isLoading, isAuthorized, cards, savedCards }) {
     const [isMore, setIsMore] = useState(false); 
     
-    let initialNumberOfCards;
-    let initialAddIndex;
+    function calculate() {
+        let initialNumberOfCards;
+        let initialAddIndex;   
 
-    if (window.innerWidth < 768) {
-        initialNumberOfCards = 5;
-        initialAddIndex = 2;
-    } else if (window.innerWidth < 1280) {
-        initialNumberOfCards = 8;
-        initialAddIndex = 2;
-    } else {
-        initialNumberOfCards = 12;
-        initialAddIndex = 3;
-    };
+        if (window.innerWidth < 768) {
+            initialNumberOfCards = 5;
+            initialAddIndex = 2;
+        } else if (window.innerWidth < 1280) {
+            initialNumberOfCards = 8;
+            initialAddIndex = 2;
+        } else {
+            initialNumberOfCards = 12;
+            initialAddIndex = 3;
+        };
+
+        return {initialNumberOfCards, initialAddIndex};
+    }
+
+    const {initialNumberOfCards, initialAddIndex} = calculate();
 
     const [numberOfCards, setNumberOfCards] = useState(initialNumberOfCards);
     const [addIndex, setAddIndex] = useState(initialAddIndex);
@@ -43,8 +49,6 @@ export default function Movies({ setSearchFormErrorText, onClickDelete, onClickS
 
     const optimizedRecalculate = throttle(recalculate, 50);
 
-    window.addEventListener('resize', optimizedRecalculate);
-
     function handleMoreClick() {
         setNumberOfCards(numberOfCards + addIndex);
     };
@@ -59,10 +63,18 @@ export default function Movies({ setSearchFormErrorText, onClickDelete, onClickS
     }, [cards, numberOfCards]);
 
     useEffect(() => {
+        window.addEventListener('resize', optimizedRecalculate);
         return () => {
             setSearchFormErrorText('');
+            window.removeEventListener('resize', optimizedRecalculate);
         }
     }, [])
+
+    useEffect(() => {
+        const {initialNumberOfCards, initialAddIndex} = calculate();
+        setNumberOfCards(initialNumberOfCards);
+        setAddIndex(initialAddIndex);
+    }, [isLoading])
     
     return (
         <>
