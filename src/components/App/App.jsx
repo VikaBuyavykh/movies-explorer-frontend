@@ -40,6 +40,7 @@ function App() {
   const [notFoundResultSavedPage, setNotFoundResultSavedPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingSavedPage, setIsLoadingSavedPage] = useState(false);
+  const [isInfoTooltipVisible, setIsInfoTooltipVisible] = useState(false);
 
   function checkValidity(e) {
     setAuthApiErrorText('');
@@ -60,6 +61,12 @@ function App() {
       setIsSubmitAvailable(false);
       formButton.setAttribute('disabled', true);
     }
+    if (form.className === 'profile__form') {
+      if (Array.from(formInputs)[0].value === currentUser.name && Array.from(formInputs)[1].value === currentUser.email) {
+        setIsSubmitAvailable(false);
+        formButton.setAttribute('disabled', true);
+      }
+    }
   }
 
   function handleLogOut() {
@@ -79,12 +86,28 @@ function App() {
     setIsAuthorized(false);
   }
 
+  function makeFormBlocked() {
+    document.querySelector('button[type="submit"]').setAttribute('disabled', true);
+    Array.from(document.querySelectorAll('input')).forEach((input) => {
+      input.setAttribute('disabled', true);
+    });
+  }
+
+  function makeFormUnblocked() {
+    document.querySelector('button[type="submit"]').removeAttribute('disabled');
+    Array.from(document.querySelectorAll('input')).forEach((input) => {
+      input.removeAttribute('disabled');
+    });
+  }
+
   function handleEditProfile(profileValues) {
+    makeFormBlocked();
     const token = localStorage.getItem('token');
     mainApi.updateProfile({ name: profileValues.name, email: profileValues.email }, token).then(() => {
       setCurrentUser({ name: profileValues.name, email: profileValues.email })
       setFormAvailability(false);
       document.querySelector('#fieldset').setAttribute('disabled', true);
+      setIsInfoTooltipVisible(true);
     }).catch((error) => {
       if (error === 'Ошибка: 409') {
         setAuthApiErrorText('Пользователь с таким email уже существует.');
@@ -93,6 +116,8 @@ function App() {
       } else {
         setAuthApiErrorText('При обновлении профиля произошла ошибка.');
       }
+    }).finally(() => {
+      makeFormUnblocked();
     })
   }
 
@@ -102,7 +127,8 @@ function App() {
   }
 
   function handleRegister() {
-    const {name, email, password} = values;
+    const {name, email, password} = values;    
+    makeFormBlocked();
     mainApi.register(name, email, password).then((response) => {
       mainApi.authorize(email, password).then((res) => {
         localStorage.setItem('token', res.token);
@@ -117,10 +143,13 @@ function App() {
       } else {
         setAuthApiErrorText('На сервере произошла ошибка.');
       }
+    }).finally(() => {
+      makeFormUnblocked();
     })
   }
 
   function handleLogin() {
+    makeFormBlocked();
     const {email, password} = values;
     mainApi.authorize(email, password).then((response) => {
       if (!response.token) {
@@ -138,6 +167,8 @@ function App() {
       } else {
         setAuthApiErrorText('При авторизации произошла ошибка. Переданный токен некорректен.')
       }
+    }).finally(() => {
+      makeFormUnblocked();
     })
   }
 
@@ -230,6 +261,7 @@ function App() {
     setNotFoundResult(false);
     setCards([]);
     if (searchQuery !== '') {
+      makeFormBlocked();
       setIsLoading(true);
       if (allMovies.length === 0) {
         moviesApi.getCards().then((res) => {
@@ -244,6 +276,7 @@ function App() {
           setResultError(true);
         }).finally(() => {
           setIsLoading(false);
+          makeFormUnblocked();
         });        
       } else {
         let allMoviesFiltered;
@@ -363,7 +396,7 @@ function App() {
           <Route path='/' element={<Main isThemeBlue='true' onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
           <Route path='/movies' element={<ProtectedRouteElement component={Movies} setSearchFormErrorText={setSearchFormErrorText} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
           <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} setSearchFormSavedPageErrorText={setSearchFormSavedPageErrorText} mapCardsSavePage={mapCardsSavePage} setCardsSavedPage={setCardsSavedPage} setButtonSavedMoviesState={setButtonSavedMoviesState} setSearchQuerySavedPage={setSearchQuerySavedPage} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
-          <Route path='/profile' element={<ProtectedRouteElement component={Profile} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
+          <Route path='/profile' element={<ProtectedRouteElement component={Profile} isInfoTooltipVisible={isInfoTooltipVisible} setIsInfoTooltipVisible={setIsInfoTooltipVisible} setFormAvailability={setFormAvailability} setIsSubmitAvailable={setIsSubmitAvailable} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
           <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} setIsSubmitAvailable={setIsSubmitAvailable} values={values} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
           <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} setIsSubmitAvailable={setIsSubmitAvailable} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
           <Route path='*' element={<NotFoundPage />} />

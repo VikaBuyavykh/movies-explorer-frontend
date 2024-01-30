@@ -6,8 +6,9 @@ import handleInput from '../../utils/validation';
 import { nameRegex } from '../../utils/regex';
 import { CurrentUserContext } from '../../utils/CurrentUserContext';
 import React, { useEffect } from 'react';
+import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
-export default function Profile({ isSubmitAvailable, authApiErrorText, formAvailability, onEditClick, onExitClick, onSubmit, onInput, onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
+export default function Profile({ isInfoTooltipVisible, setIsInfoTooltipVisible, setFormAvailability, setIsSubmitAvailable, isSubmitAvailable, authApiErrorText, formAvailability, onEditClick, onExitClick, onSubmit, onInput, onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
     const currentUser = React.useContext(CurrentUserContext);
     const {values, handleChange, setValues} = useForm({ name: currentUser.name, email: currentUser.email });
 
@@ -17,8 +18,14 @@ export default function Profile({ isSubmitAvailable, authApiErrorText, formAvail
     }
 
     useEffect(() => {
-        setValues({ name: currentUser.name, email: currentUser.email })
+        setValues({ name: currentUser.name, email: currentUser.email });
+        setIsSubmitAvailable(false);
     }, [currentUser, setValues])
+
+    useEffect(() => {
+        setFormAvailability(false);
+        setIsSubmitAvailable(false);
+    }, [])
 
     return (
         <>
@@ -54,6 +61,7 @@ export default function Profile({ isSubmitAvailable, authApiErrorText, formAvail
                     </fieldset>
                 </form>
                 <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
+                <InfoTooltip setIsInfoTooltipVisible={setIsInfoTooltipVisible} isInfoTooltipVisible={isInfoTooltipVisible} />
             </main>
         </>
     );
