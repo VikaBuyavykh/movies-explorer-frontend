@@ -171,6 +171,11 @@
     box-shadow: 0 0 10px 2px rgba(255, 255, 255, .5);
 }
 
+.form__button:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
 .form__button_inactive {
     color: #C2C2C2;
     background-color: #F8F8F8;

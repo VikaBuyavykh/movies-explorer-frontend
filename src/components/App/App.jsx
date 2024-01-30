@@ -7,13 +7,14 @@ import Register from '../Register/Register';
 import Login from '../Login/Login';
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
 import { useEffect, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import moviesApi from '../../utils/MoviesApi';
 import { mainApi } from '../../utils/MainApi';
 import { useForm } from '../../utils/useFormHook';
 import { CurrentUserContext } from '../../utils/CurrentUserContext';
 import ProtectedRouteElement from '../../utils/ProtectedRoute';
 import { SHORT_FILM_MAX_DURATION } from '../../utils/config';
+import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
 function App() {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ function App() {
   }
 
   function makeFormBlocked() {
+    setIsSubmitAvailable(false);
     document.querySelector('button[type="submit"]').setAttribute('disabled', true);
     Array.from(document.querySelectorAll('input')).forEach((input) => {
       input.setAttribute('disabled', true);
@@ -94,6 +96,7 @@ function App() {
   }
 
   function makeFormUnblocked() {
+    setIsSubmitAvailable(true);
     document.querySelector('button[type="submit"]').removeAttribute('disabled');
     Array.from(document.querySelectorAll('input')).forEach((input) => {
       input.removeAttribute('disabled');
@@ -261,7 +264,6 @@ function App() {
     setNotFoundResult(false);
     setCards([]);
     if (searchQuery !== '') {
-      makeFormBlocked();
       setIsLoading(true);
       if (allMovies.length === 0) {
         moviesApi.getCards().then((res) => {
@@ -276,7 +278,6 @@ function App() {
           setResultError(true);
         }).finally(() => {
           setIsLoading(false);
-          makeFormUnblocked();
         });        
       } else {
         let allMoviesFiltered;
@@ -363,13 +364,13 @@ function App() {
       }).catch(() => {
         navigate('/');
       });
-      mainApi.getProfile(token).then((res) => {        
-        setCurrentUser({
-          name: res.name,
-          email: res.email,
-        });
-      }).catch(console.error);
     }
+    mainApi.getProfile(token).then((res) => {        
+      setCurrentUser({
+        name: res.name,
+        email: res.email,
+      });
+    }).catch(console.error);         
   }, [isAuthorized]);
 
   useEffect(() => {
@@ -393,13 +394,13 @@ function App() {
     <div className="app">
       <CurrentUserContext.Provider value={currentUser}>
         <Routes>
+          <Route path='/signin' element={isAuthorized ? <Navigate to="/movies" replace /> : <Login onSubmit={handleLogin} onInput={checkValidity} setIsSubmitAvailable={setIsSubmitAvailable} values={values} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
+          <Route path='/signup' element={isAuthorized ? <Navigate to="/movies" replace /> : <Register onSubmit={handleRegister} onInput={checkValidity} values={values} setIsSubmitAvailable={setIsSubmitAvailable} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
           <Route path='/' element={<Main isThemeBlue='true' onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} />
           <Route path='/movies' element={<ProtectedRouteElement component={Movies} setSearchFormErrorText={setSearchFormErrorText} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
           <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} setSearchFormSavedPageErrorText={setSearchFormSavedPageErrorText} mapCardsSavePage={mapCardsSavePage} setCardsSavedPage={setCardsSavedPage} setButtonSavedMoviesState={setButtonSavedMoviesState} setSearchQuerySavedPage={setSearchQuerySavedPage} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
           <Route path='/profile' element={<ProtectedRouteElement component={Profile} isInfoTooltipVisible={isInfoTooltipVisible} setIsInfoTooltipVisible={setIsInfoTooltipVisible} setFormAvailability={setFormAvailability} setIsSubmitAvailable={setIsSubmitAvailable} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
-          <Route path='/signin' element={<Login onSubmit={handleLogin} onInput={checkValidity} setIsSubmitAvailable={setIsSubmitAvailable} values={values} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
-          <Route path='/signup' element={<Register onSubmit={handleRegister} onInput={checkValidity} values={values} setIsSubmitAvailable={setIsSubmitAvailable} handleChange={handleChange} setValues={setValues} setAuthApiErrorText={setAuthApiErrorText} authApiErrorText={authApiErrorText} isSubmitAvailable={isSubmitAvailable} />} />
-          <Route path='*' element={<NotFoundPage />} />
+          <Route path='*' element={<InfoTooltip />} />
         </Routes>
       </CurrentUserContext.Provider>
     </div>

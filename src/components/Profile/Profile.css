@@ -126,6 +126,11 @@
     box-shadow: 0 0 15px rgba(255, 255, 255, .5);
 }
 
+.profile__submit-button:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
 .profile__submit-button_inactive {
     color: #C2C2C2;
     background-color: #F8F8F8;
