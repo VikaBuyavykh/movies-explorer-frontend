@@ -2,8 +2,13 @@ import './SearchForm.css';
 import searchButtonPath from '../../images/search-button.svg';
 
 export default function SearchForm({ onSearchInputChange, onCheckboxClick, buttonState, searchQuery, handleSearchSubmit, searchFormErrorText }) {
+    function onSubmit(e) {
+        e.preventDefault();
+        handleSearchSubmit();
+    }
+    
     return (
-        <form onSubmit={handleSearchSubmit} className="search-form" noValidate>
+        <form onSubmit={onSubmit} className="search-form" noValidate>
             <fieldset className="search-form__fieldset search-form__search">
                 <input onChange={onSearchInputChange} value={searchQuery} type="search" name="search" placeholder="Фильм" className="search-form__search-field" required />
                 <button type="submit" className="search-form__search-button">

@@ -14,7 +14,6 @@ import { useForm } from '../../utils/useFormHook';
 import { CurrentUserContext } from '../../utils/CurrentUserContext';
 import ProtectedRouteElement from '../../utils/ProtectedRoute';
 import { SHORT_FILM_MAX_DURATION } from '../../utils/config';
-import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
 function App() {
   const navigate = useNavigate();
@@ -190,6 +189,8 @@ function App() {
     } else {
       setButtonState(false);
     }
+    const backwards = true;
+    handleSearchSubmit(backwards);
   };
 
   function handleCheckboxSavedPageClick(e) {
@@ -199,6 +200,8 @@ function App() {
     } else {
       setButtonSavedMoviesState(false);
     }
+    const backwards = true;
+    handleSearchSavedPageSubmit(backwards);
   };
 
   function handleSearchInputChange(e) {
@@ -256,10 +259,7 @@ function App() {
     return items.filter((item) => item.duration <= SHORT_FILM_MAX_DURATION);
   }
 
-  function handleSearchSubmit(e) {
-    if (e) {
-      e.preventDefault();
-    }
+  function handleSearchSubmit(backwards) {
     setResultError(false);
     setNotFoundResult(false);
     setCards([]);
@@ -269,7 +269,7 @@ function App() {
         moviesApi.getCards().then((res) => {
           setNotFoundResult(true);
           setAllMovies(res);
-          if (!buttonState) {
+          if (backwards ? buttonState : !buttonState) {
             setCards(nameFilter(mapCards(res)));
           } else {
             setCards(shortFilmsFilter(nameFilter(mapCards(res))))
@@ -281,7 +281,7 @@ function App() {
         });        
       } else {
         let allMoviesFiltered;
-        if (!buttonState) {
+        if (backwards ? buttonState : !buttonState) {
           allMoviesFiltered = nameFilter(mapCards(allMovies));
         } else {
           allMoviesFiltered = shortFilmsFilter(nameFilter(mapCards(allMovies)));
@@ -294,21 +294,18 @@ function App() {
           setIsLoading(false);
         }, 500);
       }      
-      localStorage.setItem('buttonState', buttonState);
+      localStorage.setItem('buttonState', backwards ? !buttonState : buttonState);
       localStorage.setItem('searchQuery', searchQuery);
     } else {
       setSearchFormErrorText('Нужно ввести ключевое слово');
     }
   }
 
-  function handleSearchSavedPageSubmit(e) {
-    if (e) {
-      e.preventDefault();
-    }
+  function handleSearchSavedPageSubmit(backwards) {
     setIsLoadingSavedPage(true);
     if (searchQuerySavedPage !== '') {
       let savedPageMovies;
-      if (!buttonSavedMoviesState) {
+      if (backwards ? buttonSavedMoviesState : !buttonSavedMoviesState) {
         savedPageMovies = nameFilterSavedPage(mapCardsSavePage(savedCards));
       } else {
         savedPageMovies = shortFilmsFilter(nameFilterSavedPage(mapCardsSavePage(savedCards)));
@@ -374,14 +371,6 @@ function App() {
   }, [isAuthorized]);
 
   useEffect(() => {
-    handleSearchSavedPageSubmit();
-  }, [buttonSavedMoviesState])
-
-  useEffect(() => {
-    handleSearchSubmit();
-  }, [buttonState])
-
-  useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       mainApi.getMovies(token).then((data) => {
@@ -400,7 +389,7 @@ function App() {
           <Route path='/movies' element={<ProtectedRouteElement component={Movies} setSearchFormErrorText={setSearchFormErrorText} onClickDelete={handleClickDelete} onClickSave={handleClickSave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoading} isAuthorized={isAuthorized} buttonState={buttonState} searchQuery={searchQuery} handleSearchSubmit={handleSearchSubmit} searchFormErrorText={searchFormErrorText} cards={cards} savedCards={savedCards} resultError={resultError} notFoundResult={notFoundResult} onCheckboxClick={handleCheckboxClick} onSearchInputChange={handleSearchInputChange} />} />
           <Route path='/saved-movies' element={<ProtectedRouteElement component={SavedMovies} setSearchFormSavedPageErrorText={setSearchFormSavedPageErrorText} mapCardsSavePage={mapCardsSavePage} setCardsSavedPage={setCardsSavedPage} setButtonSavedMoviesState={setButtonSavedMoviesState} setSearchQuerySavedPage={setSearchQuerySavedPage} savedCards={savedCards} onClickDelete={handleClickUnsave} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isLoading={isLoadingSavedPage} isAuthorized={isAuthorized} cards={cardsSavedPage} buttonState={buttonSavedMoviesState} onCheckboxClick={handleCheckboxSavedPageClick} searchQuery={searchQuerySavedPage} onSearchInputChange={handleSearchInputSavedPageChange} notFoundResult={notFoundResultSavedPage} searchFormErrorText={searchFormSavedPageErrorText} handleSearchSubmit={handleSearchSavedPageSubmit} />} />
           <Route path='/profile' element={<ProtectedRouteElement component={Profile} isInfoTooltipVisible={isInfoTooltipVisible} setIsInfoTooltipVisible={setIsInfoTooltipVisible} setFormAvailability={setFormAvailability} setIsSubmitAvailable={setIsSubmitAvailable} isSubmitAvailable={isSubmitAvailable} authApiErrorText={authApiErrorText} formAvailability={formAvailability} onEditClick={handleEditClick} onExitClick={handleLogOut} onSubmit={handleEditProfile} onInput={checkValidity} onOpenClick={handlePopupOpen} onCloseClick={handlePopupClose} isPopupVisible={popupVisibility} isAuthorized={isAuthorized} />} /> 
-          <Route path='*' element={<InfoTooltip />} />
+          <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </CurrentUserContext.Provider>
     </div>
