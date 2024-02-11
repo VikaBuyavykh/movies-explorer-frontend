@@ -1,0 +1,8 @@
+export const SHORT_FILM_MAX_DURATION = 40;
+export const MIDDLE_SCREEN_WIDTH = 768;
+export const LARGE_SCREEN_WIDTH = 1280;
+export const SMALL_SCREEN_CARDS_NUMBER = 5;
+export const MIDDLE_SCREEN_CARDS_NUMBER = 8;
+export const LARGE_SCREEN_CARDS_NUMBER = 12;
+export const SMALL_AND_MIDDLE_SCREEN_ADD_INDEX = 2;
+export const LARGE_SCREEN_ADD_INDEX = 3;

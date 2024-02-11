@@ -3,46 +3,40 @@ import Header from '../Header/Header';
 import Popup from '../Popup/Popup';
 import './Profile.css';
 import handleInput from '../../utils/validation';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { nameRegex } from '../../utils/regex';
+import { CurrentUserContext } from '../../utils/CurrentUserContext';
+import React, { useEffect } from 'react';
+import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
-export default function Profile({ onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
-    const navigate = useNavigate();
-    const {values, handleChange, setValues} = useForm({ name: "Виталий", email: "pochta@yandex.ru" });
-    const [formAvailability, setFormAvailability] = useState(false);
-    //the following constants are temporary, both of them are hardcode
-    const hasApiError = true;
-    const apiErrorMessage = 'При обновлении профиля произошла ошибка.';
+export default function Profile({ isInfoTooltipVisible, setIsInfoTooltipVisible, setFormAvailability, setIsSubmitAvailable, isSubmitAvailable, authApiErrorText, formAvailability, onEditClick, onExitClick, onSubmit, onInput, onOpenClick, onCloseClick, isPopupVisible, isAuthorized }) {
+    const currentUser = React.useContext(CurrentUserContext);
+    const {values, handleChange, setValues} = useForm({ name: currentUser.name, email: currentUser.email });
 
     function handleSubmit(e) {
         e.preventDefault();
+        onSubmit(values);
     }
 
-    function logOut() {
-        navigate('/');
-    }
+    useEffect(() => {
+        setValues({ name: currentUser.name, email: currentUser.email });
+        setIsSubmitAvailable(false);
+    }, [currentUser, setValues])
 
-    function handleClick() {
-        const element = document.querySelector('#fieldset');
-        if (!formAvailability) {
-            element.removeAttribute('disabled');
-            setFormAvailability(true);
-        } else {
-            element.setAttribute('disabled', true);
-            setFormAvailability(false);
-        }
-    }
+    useEffect(() => {
+        setFormAvailability(false);
+        setIsSubmitAvailable(false);
+    }, [])
 
     return (
         <>
             <Header onOpenClick={onOpenClick} isAuthorized={isAuthorized} />
             <main className="profile">
-                <h1 className="profile__title">Привет, Виталий!</h1>
-                <form className="profile__form" onSubmit={handleSubmit} noValidate>
+                <h1 className="profile__title">{`Привет, ${currentUser.name}!`}</h1>
+                <form className="profile__form" onInput={onInput} onSubmit={handleSubmit} noValidate>
                     <fieldset id="fieldset" className="profile__fieldset" disabled>
                         <label className="profile__label">
                             Имя
-                            <input type="text" name="name" id="name" className="profile__input" placeholder="Ваше имя" value={values.name || ''} onChange={handleChange} onInput={handleInput} required minLength="2" maxLength="30" />
+                            <input type="text" name="name" id="name" className="profile__input" placeholder="Ваше имя" value={values.name || ''} onChange={handleChange} onInput={handleInput} required pattern={nameRegex}  minLength="2" maxLength="30" />
                         </label>
                         <span id="error-name" className="profile__error"></span>
                         <label className="profile__label">
@@ -55,18 +49,19 @@ export default function Profile({ onOpenClick, onCloseClick, isPopupVisible, isA
                         {formAvailability
                             ?
                             <>
-                                <p className={`profile__error profile__api-error ${hasApiError ? 'error-visible' : ''}`}>{apiErrorMessage}</p>
-                                <button type="submit" onClick={handleClick} className="profile__submit-button">Сохранить</button>
+                                <p className='profile__error profile__api-error'>{authApiErrorText}</p>
+                                <button type="submit" className={`profile__submit-button ${!isSubmitAvailable ? 'profile__submit-button_inactive' : ''}`} disabled>Сохранить</button>
                             </>
                             :
                             <>
-                                <button type="button" onClick={handleClick} className="profile__edit-button">Редактировать</button>
-                                <button type="button" onClick={logOut} className="profile__exit-button">Выйти из аккаунта</button>
+                                <button type="button" onClick={onEditClick} className="profile__edit-button">Редактировать</button>
+                                <button type="button" onClick={onExitClick} className="profile__exit-button">Выйти из аккаунта</button>
                             </>
                         }
                     </fieldset>
                 </form>
                 <Popup onCloseClick={onCloseClick} isPopupVisible={isPopupVisible} />
+                <InfoTooltip setIsInfoTooltipVisible={setIsInfoTooltipVisible} isInfoTooltipVisible={isInfoTooltipVisible} />
             </main>
         </>
     );

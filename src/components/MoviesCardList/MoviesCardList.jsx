@@ -1,62 +1,48 @@
-import { useState } from 'react';
 import MoviesCard from '../MoviesCard/MoviesCard';
 import './MoviesCardList.css';
 
-export default function MoviesCardList({ isSavedMovies, cards }) {
-    let initialNumberOfCards;
-
-    if ((window.innerWidth < 768) && isSavedMovies) {
-        initialNumberOfCards = 2;
-    } else if (window.innerWidth < 768) {
-        initialNumberOfCards = 5;
-    } else if ((window.innerWidth < 1280) && isSavedMovies) {
-        initialNumberOfCards = 3;
-    } else if (window.innerWidth < 1280) {
-        initialNumberOfCards = 8;
-    } else if (isSavedMovies) {
-        initialNumberOfCards = 3;
-    } else {
-        initialNumberOfCards = 12;
-    }
-
-    const [numberOfCards, setNumberOfCards] = useState(initialNumberOfCards);
-
-    window.addEventListener('resize', (e) => {
-        if ((e.target.innerWidth < 768) && isSavedMovies) {
-            setNumberOfCards(2);
-        } else if (e.target.innerWidth < 768) {
-            setNumberOfCards(5);
-        } else if ((e.target.innerWidth < 1280) && isSavedMovies) {
-            setNumberOfCards(3);
-        } else if (e.target.innerWidth < 1280) {
-            setNumberOfCards(8);
-        } else if (isSavedMovies) {
-            setNumberOfCards(3);
-        } else {
-            setNumberOfCards(12);
-        }
-    })
-    
+export default function MoviesCardList({ isSaved, onClickDelete, onClickSave, numberOfCards, cards, savedCards, resultError, notFoundResult }) {
     return (
         <section className="movies-card-list">
-            <ul className="movies-card-list__container">
-                {cards.map((card, index) => {
-                    if (index < numberOfCards) {
-                        return (
-                            <MoviesCard
-                                key={card.id}
-                                cardPath={card.path}
-                                cardName={card.name}
-                                cardDuration={card.duration}
-                                isLiked={card.isLiked}
-                                isSaved={card.isSaved}
-                            />
-                        );
-                    } else {
-                        return '';
-                    }
-                })}
-            </ul>
+            {!resultError
+            ? 
+                ((cards.length > 0)
+                ?
+                    <ul className="movies-card-list__container">
+                        {cards.map((card, index) => {
+                            if (index < numberOfCards) {
+                                return (
+                                    <MoviesCard
+                                        key={card.movieId}
+                                        country={card.country}
+                                        director={card.director}
+                                        duration={card.duration}
+                                        year={card.year}
+                                        description={card.description}
+                                        image={card.image}
+                                        trailerLink={card.trailer}
+                                        nameRU={card.nameRU}
+                                        nameEN={card.nameEN}
+                                        thumbnail={card.thumbnail}
+                                        movieId={card.movieId}
+                                        onClickSave={onClickSave}
+                                        onClickDelete={onClickDelete}
+                                        savedCards={savedCards}
+                                        isSaved={isSaved}
+                                        _id={card.id}
+                                    />
+                                );
+                            } else {
+                                return '';
+                            }
+                        })}
+                    </ul>
+                :
+                (notFoundResult ? <p className="movies-card-list__result">Ничего не найдено</p> : '')
+            )
+            :
+            (<p className="movies-card-list__result">Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз</p>)
+            }
         </section>
     );
 }
