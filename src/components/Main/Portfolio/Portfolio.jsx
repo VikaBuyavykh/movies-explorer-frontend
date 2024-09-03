@@ -18,7 +18,7 @@ export default function Portfolio() {
         </li>
         <li className="portfolio__list-item">
           <a
-            href="https://github.com/VikaBuyavykh/vue-film"
+            href="https://vue-film.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
             className="portfolio__text-link"
