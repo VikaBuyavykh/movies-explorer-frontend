@@ -1,48 +1,59 @@
-import MoviesCard from '../MoviesCard/MoviesCard';
-import './MoviesCardList.css';
+import "./MoviesCardList.css";
+import MoviesCard from "../MoviesCard/MoviesCard";
 
-export default function MoviesCardList({ isSaved, onClickDelete, onClickSave, numberOfCards, cards, savedCards, resultError, notFoundResult }) {
-    return (
-        <section className="movies-card-list">
-            {!resultError
-            ? 
-                ((cards.length > 0)
-                ?
-                    <ul className="movies-card-list__container">
-                        {cards.map((card, index) => {
-                            if (index < numberOfCards) {
-                                return (
-                                    <MoviesCard
-                                        key={card.movieId}
-                                        country={card.country}
-                                        director={card.director}
-                                        duration={card.duration}
-                                        year={card.year}
-                                        description={card.description}
-                                        image={card.image}
-                                        trailerLink={card.trailer}
-                                        nameRU={card.nameRU}
-                                        nameEN={card.nameEN}
-                                        thumbnail={card.thumbnail}
-                                        movieId={card.movieId}
-                                        onClickSave={onClickSave}
-                                        onClickDelete={onClickDelete}
-                                        savedCards={savedCards}
-                                        isSaved={isSaved}
-                                        _id={card.id}
-                                    />
-                                );
-                            } else {
-                                return '';
-                            }
-                        })}
-                    </ul>
-                :
-                (notFoundResult ? <p className="movies-card-list__result">Ничего не найдено</p> : '')
-            )
-            :
-            (<p className="movies-card-list__result">Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз</p>)
-            }
-        </section>
-    );
+export default function MoviesCardList({
+  movies,
+  numberOfCards,
+  onClickSave,
+  onClickDelete,
+  resultError,
+  isSavedPage,
+  isBeforeSearching,
+}) {
+  return (
+    <section className="movies-card-list">
+      {!resultError ? (
+        movies.length > 0 ? (
+          <ul className="movies-card-list__container">
+            {movies.map((movie, index) => {
+              if (index < numberOfCards) {
+                return (
+                  <MoviesCard
+                    _id={movie._id}
+                    key={movie.movieId}
+                    movieId={movie.movieId}
+                    nameRU={movie.nameRU}
+                    nameEN={movie.nameEN}
+                    country={movie.country}
+                    director={movie.director}
+                    duration={movie.duration}
+                    year={movie.year}
+                    description={movie.description}
+                    image={movie.image}
+                    thumbnail={movie.thumbnail}
+                    trailerLink={movie.trailer}
+                    isSaved={movie.isSaved}
+                    onClickSave={onClickSave}
+                    onClickDelete={onClickDelete}
+                    isSavedPage={isSavedPage}
+                  />
+                );
+              } else {
+                return "";
+              }
+            })}
+          </ul>
+        ) : isBeforeSearching ? (
+          ""
+        ) : (
+          <p className="movies-card-list__result">Ничего не найдено</p>
+        )
+      ) : (
+        <p className="movies-card-list__result">
+          Во время запроса произошла ошибка. Возможно, проблема с соединением
+          или сервер недоступен. Подождите немного и попробуйте ещё раз
+        </p>
+      )}
+    </section>
+  );
 }
