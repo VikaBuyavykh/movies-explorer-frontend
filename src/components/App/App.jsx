@@ -25,13 +25,17 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  //имена для работы форм
+  //состояния для работы форм
 
   const [isAuthorized, setIsAuthorized] = useState(
     JSON.parse(localStorage.getItem("isAuth")) || false
   );
-  const [currentUser, setCurrentUser] = useState({});
-  const [userId, setUserId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(
+    JSON.parse(localStorage.getItem("currentUser")) || {}
+  );
+  const [userId, setUserId] = useState(
+    JSON.parse(localStorage.getItem("userId")) || null
+  );
   const { values, handleChange, setValues } = useForm({
     name: "",
     email: "",
@@ -46,7 +50,7 @@ function App() {
   );
   const [movies, setMovies] = useState([]);
 
-  //имена  для работы поиска, постфикс SM - здесь и далее для страницы '/saved-movies'
+  //состояния для работы поиска, постфикс SM - здесь и далее для страницы '/saved-movies'
 
   const [searchQuery, setSearchQuery] = useState(
     localStorage.getItem("searchQuery") || ""
@@ -183,6 +187,13 @@ function App() {
             localStorage.setItem("token", res.token);
             setIsAuthorized(true);
             localStorage.setItem("isAuth", true);
+            setUserId(res.data.id);
+            localStorage.setItem("userId", res.data.id);
+            setCurrentUser({ name: res.data.name, email: res.data.email });
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify({ name: res.data.name, email: res.data.email })
+            );
             navigate("/movies");
           })
           .catch(console.error);
@@ -215,6 +226,19 @@ function App() {
           localStorage.setItem("token", response.token);
           setIsAuthorized(true);
           localStorage.setItem("isAuth", true);
+          setUserId(response.data.id);
+          localStorage.setItem("userId", response.data.id);
+          setCurrentUser({
+            name: response.data.name,
+            email: response.data.email,
+          });
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify({
+              name: response.data.name,
+              email: response.data.email,
+            })
+          );
           navigate("/movies");
         }
       })
@@ -389,10 +413,11 @@ function App() {
         mainApi
           .getMovies(token)
           .then((res) => {
+            const usersMovies = res.filter((item) => item.user_id === userId);
             localStorage.setItem("movies", JSON.stringify(initialMovies));
             setMovies(
               initialMovies.map((movie) => {
-                const savedMovie = res.find(
+                const savedMovie = usersMovies.find(
                   (item) => item.movieId === movie.movieId
                 );
                 if (savedMovie) {
@@ -416,20 +441,23 @@ function App() {
         .then((response) => {
           if (response) {
             setCurrentUser({ name: response.name, email: response.email });
-            setIsAuthorized(true);
-            localStorage.setItem("isAuth", true);
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify({
+                name: response.name,
+                email: response.email,
+              })
+            );
             setUserId(response.id);
-            navigate("/movies");
+            localStorage.setItem("userId", response.id);
+            setIsAuthorized(true);
           }
         })
         .catch((error) => {
           console.log(error);
-          setIsAuthorized(false);
-          localStorage.removeItem("isAuth");
-          navigate("/");
+          handleLogOut();
         });
     }
-    console.log(isAuthorized);
   }, [isAuthorized]);
 
   return (
