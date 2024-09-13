@@ -53,14 +53,14 @@ export default function Movies({
     }
   }
 
-  const optimizedCalculation = throttle(calculate, 1000);
+  //const optimizedCalculation = throttle(calculate, 1000);
 
   useEffect(() => {
     calculate();
-    window.addEventListener("resize", optimizedCalculation);
-    return () => {
-      window.removeEventListener("resize", optimizedCalculation);
-    };
+    // window.addEventListener("resize", optimizedCalculation);
+    // return () => {
+    //   window.removeEventListener("resize", optimizedCalculation);
+    // };
   }, []);
 
   function handleMoreClick() {
