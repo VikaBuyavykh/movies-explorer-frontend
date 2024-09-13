@@ -19,7 +19,7 @@ import { mainApi } from "../../utils/MainApi";
 import { useForm } from "../../utils/useFormHook";
 import { CurrentUserContext } from "../../utils/CurrentUserContext";
 import ProtectedRouteElement from "../../utils/ProtectedRoute";
-import { SHORT_FILM_MAX_DURATION } from "../../utils/config";
+import { SHORT_FILM_MAX_DURATION } from "../../utils/constants";
 
 function App() {
   const navigate = useNavigate();

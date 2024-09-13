@@ -15,7 +15,7 @@ import {
   LARGE_SCREEN_CARDS_NUMBER,
   SMALL_AND_MIDDLE_SCREEN_ADD_INDEX,
   LARGE_SCREEN_ADD_INDEX,
-} from "../../utils/config";
+} from "../../utils/constants";
 
 export default function Movies({
   isAuthorized,
@@ -36,47 +36,32 @@ export default function Movies({
   isBeforeSearching,
 }) {
   const [isMore, setIsMore] = useState(false);
+  const [numberOfCards, setNumberOfCards] = useState(0);
+  const [addIndex, setAddIndex] = useState(0);
 
-  // function calculate() {
-  //   let initialNumberOfCards;
-  //   let initialAddIndex;
+  function calculate() {
+    if (window.innerWidth >= LARGE_SCREEN_WIDTH) {
+      setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
+      setAddIndex(LARGE_SCREEN_ADD_INDEX);
+    } else {
+      setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
+      if (window.innerWidth >= MIDDLE_SCREEN_WIDTH) {
+        setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
+      } else {
+        setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
+      }
+    }
+  }
 
-  //   if (window.innerWidth < MIDDLE_SCREEN_WIDTH) {
-  //     initialNumberOfCards = SMALL_SCREEN_CARDS_NUMBER;
-  //     initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
-  //   } else if (window.innerWidth < LARGE_SCREEN_WIDTH) {
-  //     initialNumberOfCards = MIDDLE_SCREEN_CARDS_NUMBER;
-  //     initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
-  //   } else {
-  //     initialNumberOfCards = LARGE_SCREEN_CARDS_NUMBER;
-  //     initialAddIndex = LARGE_SCREEN_ADD_INDEX;
-  //   }
+  const optimizedCalculation = throttle(calculate, 50);
 
-  //   return { initialNumberOfCards, initialAddIndex };
-  // }
-
-  //const { initialNumberOfCards, initialAddIndex } = calculate();
-
-  // const [numberOfCards, setNumberOfCards] = useState(initialNumberOfCards);
-  // const [addIndex, setAddIndex] = useState(initialAddIndex);
-
-  const [numberOfCards, setNumberOfCards] = useState(6);
-  const [addIndex, setAddIndex] = useState(3);
-
-  // function recalculate(e) {
-  //   if (e.target.innerWidth < MIDDLE_SCREEN_WIDTH) {
-  //     setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
-  //     setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
-  //   } else if (e.target.innerWidth < LARGE_SCREEN_WIDTH) {
-  //     setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
-  //     setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
-  //   } else {
-  //     setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
-  //     setAddIndex(LARGE_SCREEN_ADD_INDEX);
-  //   }
-  // }
-
-  //const optimizedRecalculate = throttle(recalculate, 50);
+  useEffect(() => {
+    calculate();
+    window.addEventListener("resize", optimizedCalculation);
+    return () => {
+      window.removeEventListener("resize", optimizedCalculation);
+    };
+  }, []);
 
   function handleMoreClick() {
     setNumberOfCards(numberOfCards + addIndex);
@@ -89,13 +74,6 @@ export default function Movies({
       setIsMore(false);
     }
   }, [movies, numberOfCards]);
-
-  // useEffect(() => {
-  //   window.addEventListener("resize", optimizedRecalculate);
-  //   return () => {
-  //     window.removeEventListener("resize", optimizedRecalculate);
-  //   };
-  // }, []);
 
   useEffect(() => {
     localStorage.setItem("buttonState", buttonState);
