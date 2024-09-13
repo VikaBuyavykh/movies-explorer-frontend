@@ -1,5 +1,5 @@
 import "./Movies.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import throttle from "../../utils/throttle";
 import Header from "../Header/Header";
 import SearchForm from "../SearchForm/SearchForm";
@@ -35,45 +35,90 @@ export default function Movies({
   isLoading,
   isBeforeSearching,
 }) {
-  const [isMore, setIsMore] = useState(false);
-  const [numberOfCards, setNumberOfCards] = useState(0);
-  const [addIndex, setAddIndex] = useState(0);
+  // const [isMore, setIsMore] = useState(false);
+  // const [numberOfCards, setNumberOfCards] = useState(0);
+  // const [addIndex, setAddIndex] = useState(0);
 
-  function calculate() {
-    if (window.innerWidth >= LARGE_SCREEN_WIDTH) {
-      setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
-      setAddIndex(LARGE_SCREEN_ADD_INDEX);
-    } else {
-      setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
-      if (window.innerWidth >= MIDDLE_SCREEN_WIDTH) {
-        setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
-      } else {
-        setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
-      }
-    }
+  const [width, setWidth] = useState(window.innerWidth);
+
+  function resize() {
+    setWidth(window.innerWidth);
   }
+
+  const throttledResize = throttle(resize, 200);
+
+  useEffect(() => {
+    window.addEventListener("resize", throttledResize);
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+    };
+  }, []);
+
+  const [moreCounter, setMoreCounter] = useState(0);
+
+  function handleMoreClick() {
+    setMoreCounter(moreCounter + 1);
+  }
+
+  const addIndex = useMemo(
+    () =>
+      width < LARGE_SCREEN_WIDTH
+        ? SMALL_AND_MIDDLE_SCREEN_ADD_INDEX
+        : LARGE_SCREEN_ADD_INDEX,
+    [width]
+  );
+
+  const numberOfCards = useMemo(
+    () =>
+      (width < MIDDLE_SCREEN_WIDTH
+        ? SMALL_SCREEN_CARDS_NUMBER
+        : width < LARGE_SCREEN_WIDTH
+        ? MIDDLE_SCREEN_CARDS_NUMBER
+        : LARGE_SCREEN_CARDS_NUMBER) +
+      moreCounter * addIndex,
+    [width, addIndex, moreCounter]
+  );
+
+  const isMore = useMemo(
+    () => movies.length > numberOfCards,
+    [movies, numberOfCards]
+  );
+
+  // function calculate() {
+  //   if (window.innerWidth >= LARGE_SCREEN_WIDTH) {
+  //     setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
+  //     setAddIndex(LARGE_SCREEN_ADD_INDEX);
+  //   } else {
+  //     setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
+  //     if (window.innerWidth >= MIDDLE_SCREEN_WIDTH) {
+  //       setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
+  //     } else {
+  //       setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
+  //     }
+  //   }
+  // }
 
   //const optimizedCalculation = throttle(calculate, 1000);
 
-  useEffect(() => {
-    calculate();
-    // window.addEventListener("resize", optimizedCalculation);
-    // return () => {
-    //   window.removeEventListener("resize", optimizedCalculation);
-    // };
-  }, []);
+  //useEffect(() => {
+  //  calculate();
+  // window.addEventListener("resize", optimizedCalculation);
+  // return () => {
+  //   window.removeEventListener("resize", optimizedCalculation);
+  // };
+  //}, []);
 
-  function handleMoreClick() {
-    setNumberOfCards(numberOfCards + addIndex);
-  }
+  // function handleMoreClick() {
+  //   setNumberOfCards(numberOfCards + addIndex);
+  // }
 
-  useEffect(() => {
-    if (movies.length > numberOfCards) {
-      setIsMore(true);
-    } else {
-      setIsMore(false);
-    }
-  }, [movies, numberOfCards]);
+  // useEffect(() => {
+  //   if (movies.length > numberOfCards) {
+  //     setIsMore(true);
+  //   } else {
+  //     setIsMore(false);
+  //   }
+  // }, [movies, numberOfCards]);
 
   useEffect(() => {
     localStorage.setItem("buttonState", buttonState);
