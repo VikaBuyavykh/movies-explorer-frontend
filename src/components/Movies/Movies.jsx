@@ -37,43 +37,46 @@ export default function Movies({
 }) {
   const [isMore, setIsMore] = useState(false);
 
-  function calculate() {
-    let initialNumberOfCards;
-    let initialAddIndex;
+  // function calculate() {
+  //   let initialNumberOfCards;
+  //   let initialAddIndex;
 
-    if (window.innerWidth < MIDDLE_SCREEN_WIDTH) {
-      initialNumberOfCards = SMALL_SCREEN_CARDS_NUMBER;
-      initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
-    } else if (window.innerWidth < LARGE_SCREEN_WIDTH) {
-      initialNumberOfCards = MIDDLE_SCREEN_CARDS_NUMBER;
-      initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
-    } else {
-      initialNumberOfCards = LARGE_SCREEN_CARDS_NUMBER;
-      initialAddIndex = LARGE_SCREEN_ADD_INDEX;
-    }
+  //   if (window.innerWidth < MIDDLE_SCREEN_WIDTH) {
+  //     initialNumberOfCards = SMALL_SCREEN_CARDS_NUMBER;
+  //     initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
+  //   } else if (window.innerWidth < LARGE_SCREEN_WIDTH) {
+  //     initialNumberOfCards = MIDDLE_SCREEN_CARDS_NUMBER;
+  //     initialAddIndex = SMALL_AND_MIDDLE_SCREEN_ADD_INDEX;
+  //   } else {
+  //     initialNumberOfCards = LARGE_SCREEN_CARDS_NUMBER;
+  //     initialAddIndex = LARGE_SCREEN_ADD_INDEX;
+  //   }
 
-    return { initialNumberOfCards, initialAddIndex };
-  }
+  //   return { initialNumberOfCards, initialAddIndex };
+  // }
 
-  const { initialNumberOfCards, initialAddIndex } = calculate();
+  //const { initialNumberOfCards, initialAddIndex } = calculate();
 
-  const [numberOfCards, setNumberOfCards] = useState(initialNumberOfCards);
-  const [addIndex, setAddIndex] = useState(initialAddIndex);
+  // const [numberOfCards, setNumberOfCards] = useState(initialNumberOfCards);
+  // const [addIndex, setAddIndex] = useState(initialAddIndex);
 
-  function recalculate(e) {
-    if (e.target.innerWidth < MIDDLE_SCREEN_WIDTH) {
-      setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
-      setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
-    } else if (e.target.innerWidth < LARGE_SCREEN_WIDTH) {
-      setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
-      setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
-    } else {
-      setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
-      setAddIndex(LARGE_SCREEN_ADD_INDEX);
-    }
-  }
+  const [numberOfCards, setNumberOfCards] = useState(6);
+  const [addIndex, setAddIndex] = useState(3);
 
-  const optimizedRecalculate = throttle(recalculate, 50);
+  // function recalculate(e) {
+  //   if (e.target.innerWidth < MIDDLE_SCREEN_WIDTH) {
+  //     setNumberOfCards(SMALL_SCREEN_CARDS_NUMBER);
+  //     setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
+  //   } else if (e.target.innerWidth < LARGE_SCREEN_WIDTH) {
+  //     setNumberOfCards(MIDDLE_SCREEN_CARDS_NUMBER);
+  //     setAddIndex(SMALL_AND_MIDDLE_SCREEN_ADD_INDEX);
+  //   } else {
+  //     setNumberOfCards(LARGE_SCREEN_CARDS_NUMBER);
+  //     setAddIndex(LARGE_SCREEN_ADD_INDEX);
+  //   }
+  // }
+
+  //const optimizedRecalculate = throttle(recalculate, 50);
 
   function handleMoreClick() {
     setNumberOfCards(numberOfCards + addIndex);
@@ -87,12 +90,12 @@ export default function Movies({
     }
   }, [movies, numberOfCards]);
 
-  useEffect(() => {
-    window.addEventListener("resize", optimizedRecalculate);
-    return () => {
-      window.removeEventListener("resize", optimizedRecalculate);
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("resize", optimizedRecalculate);
+  //   return () => {
+  //     window.removeEventListener("resize", optimizedRecalculate);
+  //   };
+  // }, []);
 
   useEffect(() => {
     localStorage.setItem("buttonState", buttonState);
