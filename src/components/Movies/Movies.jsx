@@ -84,6 +84,8 @@ export default function Movies({
     [movies, numberOfCards]
   );
 
+  //other stuff
+
   useEffect(() => {
     localStorage.setItem("buttonState", buttonState);
   }, [buttonState]);
