@@ -29,7 +29,7 @@ export default function Portfolio() {
         </li>
         <li className="portfolio__list-item">
           <a
-            href="https://vikabuyavykh.nomoredomainsmonster.ru/"
+            href="https://mesto-project-buyavykh.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
             className="portfolio__text-link"
